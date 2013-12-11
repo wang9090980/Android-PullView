@@ -1,16 +1,53 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+<com.example.pullviewforandroid.SuperScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent">
+	<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent">
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:padding="16dp"
+	        android:text="这是我们渴望却不可及的未来。。。
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+谎言1：好音乐自然有听众
+示例：“孩子们将会接触他们想接触的，而不是市场推给他们的东西。”（Topspin CEO Ian Rogers，2010）
+真相：最火的歌曲总是大平台上大肆吹嘘的那些，挣大钱的都是大公司。（比如Katy Perry、Pitbull、Flo Dida）
 
-</RelativeLayout>
+谎言2：长尾、利基有钱途
+示例：“忘了那些财源滚滚的榜首金曲吧，未来的娱乐业在无数利基市场。”（Chris Anderson，“长尾理论”倡导者）
+真相：互联网并没有让利基们大爆炸，而是让哗众取宠更加哗众取宠。
+（利基市场，可理解为小众市场，细分市场，新仔释义）
+
+谎言3：没有大公司的控制，音乐人会很爽
+真相：大量无节操、无下限、粗制滥造的作品充斥市场，好东西仍然难出头。
+
+谎言4：大公司正在死去
+真相：大的唱片公司势力有所减弱，但离死远着呢！他们仍然控制着金曲的创作和销售，控制着艺人的养成。不然Jay-Z和Macklemore为啥还要签大公司？
+
+谎言5：数字音乐比实体唱片更挣钱
+真相：数字音乐意味着单次点击/消费的价值低了很多。（为什么日本能成为全球最大的市场？人家靠的是实体唱片！）
+
+谎言6：巡演才是挣钱之道
+真相：也许一小戳人是这样，但大多数乐队仍然在路上痛苦挣扎着。（看看Imogen Heap）
+
+谎言7：中产艺人更多了
+真相：两极分化更严重了
+
+谎言8：众筹有用
+真相：奇迹只发生在Amanda Palmer等一小戳人身上
+
+谎言9：Spotify是朋友
+真相：如果Spotify够好运，他们能从华尔街那里获得很多钱，他们也帮大公司挣了很多钱，但音乐人没有。
+
+谎言10：Google和YouTube是朋友
+真相：人家是商人，不是慈善家，DMCA（数字千年版权法案）对Google有利，对内容生产者有害。
+
+谎言11：如果Pandora能降低版权费，他们将活得更好，并将对艺人有所帮助
+真相：Pandora忘了版权费是跟艺人分成比例挂钩的。（新闻背景）
+
+谎言12：卖T恤等周边也能挣钱
+真相：巡演过程中能靠卖T恤挣钱的艺人非常非常少，真正能支撑巡演的只有卖CD。（21世纪之前）
+
+谎言13：“流”是未来
+真相：Spotify仍然亏本、Phapsody正在裁员，Youtube靠免费音乐支撑。
+
+综上所述，未来很可能是，让作品价值无限归零的YouTube大行其道，Spotify什么的也不会一直走运下去。" />
+	</LinearLayout>
+</com.example.pullviewforandroid.SuperScrollView>
