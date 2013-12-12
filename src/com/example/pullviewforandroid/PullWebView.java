@@ -17,7 +17,7 @@ public class PullWebView extends PullViewBase<WebView> {
 
 	@Override
 	public WebView createRefreshableView() {
-		return null;
+		return new WebView(getContext());
 	}
 
 	@Override
