@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 
@@ -33,15 +34,17 @@ public class PullWebView extends PullViewBase<WebView> {
 	}
 
 	@Override
-	public boolean isInTheHeader() {
-		return getScrollY() == 0;
+	public boolean isInTheHeader(WebView pullView) {
+        Log.d(PullViewBase.class.getSimpleName(), "ScrollY="+pullView.getScrollY()+"; true?="+(pullView.getScrollY() == 0));
+		return pullView.getScrollY() == 0;
 	}
 
 	@SuppressLint("FloatMath")
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isInTheFooter() {
-		return pullView.getScrollY() >= (FloatMath.floor(pullView.getContentHeight() * pullView.getScale()) - pullView.getHeight());
+	public boolean isInTheFooter(WebView pullView) {
+        Log.d(PullViewBase.class.getSimpleName(), "ContentHeight="+pullView.getContentHeight()+"; Height="+pullView.getHeight()+"; ScrollY="+pullView.getScrollY());
+        return pullView.getScrollY() >= (FloatMath.floor(pullView.getContentHeight() * pullView.getScale()) - pullView.getHeight());
 	}
 
 	@Override
@@ -50,12 +53,12 @@ public class PullWebView extends PullViewBase<WebView> {
 	}
 
 	@Override
-	protected void scrollPullViewToHeader() {
+	protected void scrollPullViewToHeader(WebView pullView) {
 		pullView.scrollTo(0, 0);
 	}
 
 	@Override
-	protected void scrollPullViewToFooter() {
+	protected void scrollPullViewToFooter(WebView pullView) {
 		
 	}
 }

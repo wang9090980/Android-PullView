@@ -31,12 +31,12 @@ public abstract class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	public boolean isInTheHeader() {
+	public boolean isInTheHeader(ScrollView pullView) {
 		return false;
 	}
 
 	@Override
-	public boolean isInTheFooter() {
+	public boolean isInTheFooter(ScrollView pullView) {
 		return false;
 	}
 
