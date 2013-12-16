@@ -1,9 +1,12 @@
-package com.example.pullviewforandroid;
+package me.xiaopan.pullview.activity;
 
+import me.xiaopan.pullview.PullWebView;
+import me.xiaopan.pullview.activity.util.WebViewManager;
+import me.xiaopan.pullview.example.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class MainActivity extends Activity {
+public class PullScrollViewActivity extends Activity {
 	private WebViewManager webViewManager;
 	
 	@Override
@@ -12,7 +15,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_web);
 		
 		PullWebView pullWebView = (PullWebView) findViewById(R.id.pullWeb_web);
-		webViewManager = new WebViewManager(pullWebView.getRefreshableView());
+		webViewManager = new WebViewManager(pullWebView.getPullView());
 		webViewManager.getWebView().loadUrl("http://baidu.com");
 	}
 

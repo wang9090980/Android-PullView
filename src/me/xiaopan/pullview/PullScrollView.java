@@ -1,12 +1,13 @@
-package com.example.pullviewforandroid;
+package me.xiaopan.pullview;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ScrollView;
 
-public class PullScrollView extends ScrollView {
+public class PullScrollView extends PullViewBase<ScrollView> {
 
 	public PullScrollView(Context context) {
 		super(context);
@@ -16,16 +17,20 @@ public class PullScrollView extends ScrollView {
 		super(context, attrs);
 	}
 
-	public PullScrollView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-//		OverScroller overScroller = new OverScroller();
+	@Override
+	public ScrollView onCreatePullView() {
+		return new ScrollView(getContext());
 	}
 
-    @Override
-    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-//        Log.d(SuperScrollView.class.getSimpleName(), "scrollX="+scrollX+"；scrollY="+scrollY+"；clampedX="+clampedX+"；clampedY="+clampedY);
-        super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
-    }
+	@Override
+	public View onCreateHeaderView() {
+		return null;
+	}
+
+	@Override
+	public View onCreateFooterView() {
+		return null;
+	}
 
     @Override
 	 protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX, int scrollRangeY, int maxOverScrollX, int maxOverScrollY, boolean isTouchEvent) {
@@ -64,6 +69,4 @@ public class PullScrollView extends ScrollView {
     private void rollBack(){
         Log.d(PullScrollView.class.getSimpleName(), "回滚");
     }
-
-
 }

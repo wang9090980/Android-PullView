@@ -1,4 +1,4 @@
-package com.example.pullviewforandroid;
+package me.xiaopan.pullview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements GestureDetector.OnGestureListener{
-	private T refreshableView;
+	private T pullView;
 	private View headerView;
 	private View footerView;
 	private GestureDetector gestureDetector;
@@ -25,12 +25,22 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	}
 	
 	private void init(){
-		refreshableView = createRefreshableView();
-		headerView = createHeaderView();
-		footerView = createFooterView();
-		addView(refreshableView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+		pullView = onCreatePullView();
+		headerView = onCreateHeaderView();
+		footerView = onCreateFooterView();
+		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		gestureDetector = new GestureDetector(getContext(), this);
 	}
+
+//	@Override
+//	public void addView(View child, int index, ViewGroup.LayoutParams params) {
+//		final T refreshableView = getPullView();
+//		if (refreshableView instanceof ViewGroup) {
+//			((ViewGroup) refreshableView).addView(child, index, params);
+//		} else {
+//			throw new UnsupportedOperationException("Refreshable View is not a ViewGroup so can't addView");
+//		}
+//	}
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -51,20 +61,32 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		scrollBy(-(int) distanceX, -(int) distanceY);
+//		scrollBy(-(int) distanceX, -(int) distanceY);
 		Log.d(PullWebView.class.getSimpleName(), "distanceX="+distanceX+"; distanceY="+distanceY);
 		return true;
 	}
 
-	public T getRefreshableView(){
-		return refreshableView;
+	public T getPullView(){
+		return pullView;
 	}
 
-	public abstract T createRefreshableView();
+	/**
+	 * 当创建内容视图
+	 * @return
+	 */
+	public abstract T onCreatePullView();
 
-	public abstract View createHeaderView();
+	/**
+	 * 当创建头视图
+	 * @return
+	 */
+	public abstract View onCreateHeaderView();
 
-	public abstract View createFooterView();
+	/**
+	 * 当创建尾视图
+	 * @return
+	 */
+	public abstract View onCreateFooterView();
 
 	@Override
 	public void onShowPress(MotionEvent e) {}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.pullviewforandroid;
+package me.xiaopan.pullview.activity.util;
 
 import android.annotation.SuppressLint;
 import android.webkit.WebSettings;

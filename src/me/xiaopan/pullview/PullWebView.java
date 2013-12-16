@@ -1,4 +1,4 @@
-package com.example.pullviewforandroid;
+package me.xiaopan.pullview;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -16,17 +16,17 @@ public class PullWebView extends PullViewBase<WebView> {
 	}
 
 	@Override
-	public WebView createRefreshableView() {
+	public WebView onCreatePullView() {
 		return new WebView(getContext());
 	}
 
 	@Override
-	public View createHeaderView() {
+	public View onCreateHeaderView() {
 		return null;
 	}
 
 	@Override
-	public View createFooterView() {
+	public View onCreateFooterView() {
 		return null;
 	}
 
