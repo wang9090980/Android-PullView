@@ -12,11 +12,11 @@ import android.widget.Scroller;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
-    private boolean self;
-    private T pullView;
+    private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
+    private T pullView; //被拉的视图
 	private State state;    //状态标识
 	private Scroller scroller;  //滚动器，用来回滚头部或尾部
-    private CompositeGestureDetector compositeGestureDetector;
+    private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -32,15 +32,15 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	private void init(){
         setOrientation(LinearLayout.VERTICAL);
 		pullView = createPullView();
-        self = true;
+        addViewToSelf = true;
 		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        self = false;
+        addViewToSelf = false;
 		scroller = new Scroller(getContext(), new AccelerateDecelerateInterpolator());
 	}
 
 	@Override
 	public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if(self){
+        if(addViewToSelf){
             super.addView(child, index, params);
         }else if(pullView instanceof ViewGroup){
             ((ViewGroup) pullView).addView(child, index, params);
@@ -93,7 +93,15 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         rollback(Math.abs(getScrollY()));
     }
 
-	@Override
+    @Override
+    public boolean onDown(MotionEvent e) {
+        if(scroller.computeScrollOffset()){
+            scroller.abortAnimation();
+        }
+        return true;
+    }
+
+    @Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){

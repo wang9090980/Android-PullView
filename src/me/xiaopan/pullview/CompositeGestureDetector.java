@@ -22,7 +22,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
 
     @Override
     public boolean onDown(MotionEvent e) {
-        return true;
+        return gestureListener.onDown(e);
     }
 
     @Override
@@ -51,6 +51,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
     }
 
     public interface GestureListener{
+        public boolean onDown(MotionEvent e);
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
     }
 }
