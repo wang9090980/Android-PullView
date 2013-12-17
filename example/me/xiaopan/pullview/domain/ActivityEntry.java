@@ -16,12 +16,10 @@
 
 package me.xiaopan.pullview.domain;
 
+import me.xiaopan.pullview.adapter.TextAdapter;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import me.xiaopan.pullview.adapter.TextAdapter;
 
 public class ActivityEntry implements TextAdapter.Text {
 	private String name;

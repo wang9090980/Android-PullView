@@ -5,8 +5,6 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
-import me.xiaopan.pullview.example.R;
-
 /**
  * 可拉的ListView
  */

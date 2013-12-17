@@ -17,14 +17,13 @@ package me.xiaopan.pullview.adapter;
 
 import java.util.List;
 
+import me.xiaopan.pullview.example.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
-import me.xiaopan.pullview.example.R;
 
 public class TextAdapter extends BaseAdapter{
 	private Context conetxt;
