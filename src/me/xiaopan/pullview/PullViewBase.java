@@ -13,6 +13,8 @@ import android.widget.Scroller;
 public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
+    private boolean rollbacking;    //回滚中
+    private boolean abortAnimation;
     private T pullView; //被拉的视图
 	private State state;    //状态标识
 	private Scroller scroller;  //滚动器，用来回滚头部或尾部
@@ -53,39 +55,48 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollTo(0, scroller.getCurrY());
                 invalidate();
-            }else if(getPullOrientation() == PullOrientation.VERTICAL){
+            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollTo(scroller.getCurrX(), 0);
                 invalidate();
             }
-		}
+            logD("回滚：未完成");
+		}else{
+            if(rollbacking){
+                if(!abortAnimation){
+                    logD("回滚：已完成");
+                    state = State.NORMAL;
+                }
+                rollbacking = false;
+            }
+        }
 	}
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		boolean result = super.dispatchTouchEvent(ev);
+        compositeGestureDetector.onTouchEvent(ev);
         switch(ev.getAction()){
 			case MotionEvent.ACTION_UP :
 				logD("弹起");
                 if(state == State.PULL_HEADER){
                     rollback();
-					state = State.NORMAL;
 				}else if(state == State.PULL_FOOTER){
                     rollback(-Math.abs(getScrollY()));
-					state = State.NORMAL;
 				}
 				break;
-			case MotionEvent.ACTION_CANCEL : 
+			case MotionEvent.ACTION_CANCEL :
 				break;
-			default : 
+			default :
 				break;
 		}
-        compositeGestureDetector.onTouchEvent(ev);
 		return result;
 	}
 
     private void rollback(int dy){
         logD("回滚，开始位置="+getScrollY()+"；距离："+dy+"；耗时="+500);
         scroller.startScroll(0, getScrollY(), 0, dy);
+        rollbacking = true;
+        abortAnimation = false;
         invalidate();
     }
 
@@ -96,6 +107,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     @Override
     public boolean onDown(MotionEvent e) {
         if(scroller.computeScrollOffset()){
+            abortAnimation = true;
             scroller.abortAnimation();
         }
         return true;
@@ -246,7 +258,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		/**
 		 * 横向拉伸
 		 */
-		LANDSCAPE
+		LANDSCAPE,
 	}
 	
 	/**
@@ -267,15 +279,5 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		 * 拉伸尾部
 		 */
 		PULL_FOOTER, 
-		
-		/**
-		 * 回滚头部
-		 */
-		ROLLBACK_HEADER, 
-		
-		/**
-		 * 回滚尾部
-		 */
-		ROLLBACK_FOOTER
 	}
 }
