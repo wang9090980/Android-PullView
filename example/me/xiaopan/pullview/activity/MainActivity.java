@@ -4,8 +4,6 @@ import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +21,14 @@ public class MainActivity extends ListActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_list);
 
         List<TextAdapter.Text> entrys = new ArrayList<TextAdapter.Text>();
-        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullWebView), PullWebViewActivity.class).create());
-        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullScrollView), PullScrollViewActivity.class).create());
+
+        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullList), PullListActivity.class).create());
+        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullScroll), PullScrollActivity.class).create());
+        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullWeb), PullWebActivity.class).create());
+
         getListView().setAdapter(textAdapter = new TextAdapter(getBaseContext(), entrys));
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {

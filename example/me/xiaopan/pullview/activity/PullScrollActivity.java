@@ -4,7 +4,7 @@ import me.xiaopan.pullview.example.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class PullScrollViewActivity extends Activity {
+public class PullScrollActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

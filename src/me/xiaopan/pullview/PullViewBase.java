@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements GestureDetector.OnGestureListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
+    private boolean self;
     private T pullView;
 	private State state;    //状态标识
 	private Scroller scroller;  //滚动器，用来回滚头部或尾部
@@ -29,22 +31,23 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	}
 	
 	private void init(){
-		setBackgroundColor(Color.BLACK);
+        setOrientation(LinearLayout.VERTICAL);
 		pullView = createPullView();
+        self = true;
 		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        self = false;
 		gestureDetector = new GestureDetector(getContext(), this);
 		scroller = new Scroller(getContext(), new AccelerateDecelerateInterpolator());
 	}
 
-//	@Override
-//	public void addView(View child, int index, ViewGroup.LayoutParams params) {
-//		final T refreshableView = getPullView();
-//		if (refreshableView instanceof ViewGroup) {
-//			((ViewGroup) refreshableView).addView(child, index, params);
-//		} else {
-//			throw new UnsupportedOperationException("Refreshable View is not a ViewGroup so can't addView");
-//		}
-//	}
+	@Override
+	public void addView(View child, int index, ViewGroup.LayoutParams params) {
+        if(self){
+            super.addView(child, index, params);
+        }else if(pullView instanceof ViewGroup){
+            ((ViewGroup) pullView).addView(child, index, params);
+        }
+	}
 	
 	@Override
 	public void computeScroll() {

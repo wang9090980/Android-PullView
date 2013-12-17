@@ -4,9 +4,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="9"
-        android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="19" />
     
     <uses-permission android:name="android.permission.INTERNET"/>
 
@@ -23,8 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="me.xiaopan.pullview.activity.PullScrollViewActivity" android:label="@string/activty_pullScrollView"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullWebViewActivity" android:label="@string/activty_pullWebView"/>
+        <activity android:name="me.xiaopan.pullview.activity.PullScrollActivity" android:label="@string/activty_pullScroll"/>
+        <activity android:name="me.xiaopan.pullview.activity.PullWebActivity" android:label="@string/activty_pullWeb"/>
+        <activity android:name="me.xiaopan.pullview.activity.PullListActivity" android:label="@string/activty_pullList"/>
     </application>
 
 </manifest>

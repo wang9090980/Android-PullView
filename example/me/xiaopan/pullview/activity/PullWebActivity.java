@@ -6,7 +6,7 @@ import me.xiaopan.pullview.example.R;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class PullWebViewActivity extends Activity {
+public class PullWebActivity extends Activity {
 	private WebViewManager webViewManager;
 	
 	@Override
