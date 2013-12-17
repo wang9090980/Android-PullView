@@ -108,35 +108,49 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if(state == State.PULL_HEADER){
-            logD("正在拉伸头部");
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                if(getScrollY() == 0){
+                logD("正在垂直拉伸头部，ScrollY="+getScrollY());
+                if(getScrollY() >= 0){
+                    logD("头部回滚完毕");
                     state = State.NORMAL;
                 }
-            }else{
+                scrollPullViewToHeader(pullView);
+                return true;
+            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                if(getScrollX() == 0){
+                logD("正在横向拉伸头部，ScrollX="+getScrollX());
+                if(getScrollX() >= 0){
+                    logD("头部回滚完毕");
                     state = State.NORMAL;
                 }
+                scrollPullViewToHeader(pullView);
+                return true;
+            }else{
+                return false;
             }
-            scrollPullViewToHeader(pullView);
-            return true;
         }else if(state == State.PULL_FOOTER){
-            logD("正在拉伸尾部");
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                if(getScrollY() == 0){
+                logD("正在垂直拉伸尾部，ScrollY="+getScrollY());
+                if(getScrollY() <= 0){
+                    logD("尾部回滚完毕");
                     state = State.NORMAL;
                 }
-            }else{
+                scrollPullViewToFooter(pullView);
+                return true;
+            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                if(getScrollX() == 0){
+                logD("正在垂横向伸尾部，ScrollX="+getScrollX());
+                if(getScrollX() <= 0){
+                    logD("尾部回滚完毕");
                     state = State.NORMAL;
                 }
+                scrollPullViewToFooter(pullView);
+                return true;
+            }else{
+                return false;
             }
-            scrollPullViewToFooter(pullView);
-            return true;
         }else if(distanceY < 0){
             if(isInTheHeader(pullView)){
                 logD("开始拉伸头部");

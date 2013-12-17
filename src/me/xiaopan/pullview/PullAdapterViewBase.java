@@ -53,7 +53,7 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
         final Adapter adapter = pullView.getAdapter();
 
         if (null == adapter || adapter.isEmpty()) {
-            Log.d(PullViewBase.class.getSimpleName(), "isFirstItemVisible. Empty View.");
+//            Log.d(PullViewBase.class.getSimpleName(), "isFirstItemVisible. Empty View.");
             return true;
         } else {
             /**
@@ -78,12 +78,12 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
         final Adapter adapter = pullView.getAdapter();
 
         if (null == adapter || adapter.isEmpty()) {
-            Log.d(PullViewBase.class.getSimpleName(), "isLastItemVisible. Empty View.");
+//            Log.d(PullViewBase.class.getSimpleName(), "isLastItemVisible. Empty View.");
             return true;
         } else {
             final int lastItemPosition = pullView.getCount() - 1;
             final int lastVisiblePosition = pullView.getLastVisiblePosition();
-            Log.d(PullViewBase.class.getSimpleName(), "isLastItemVisible. Last Item Position: " + lastItemPosition + " Last Visible Pos: " + lastVisiblePosition);
+//            Log.d(PullViewBase.class.getSimpleName(), "isLastItemVisible. Last Item Position: " + lastItemPosition + " Last Visible Pos: " + lastVisiblePosition);
 
             /**
              * This check should really just be: lastVisiblePosition ==
