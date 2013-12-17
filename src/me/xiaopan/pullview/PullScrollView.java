@@ -34,7 +34,7 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 //	}
 
 	@Override
-	public boolean isInTheHeader(ScrollView pullView) {
+	public boolean isCanPullHeader(ScrollView pullView) {
         View scrollViewChild = pullView.getChildAt(0);
         int contentHeight = null != scrollViewChild?scrollViewChild.getHeight():0;  //内容高度
         int viewHeight = getHeight();   //视图高度
@@ -46,7 +46,7 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	public boolean isInTheFooter(ScrollView pullView) {
+	public boolean isCanPullFooter(ScrollView pullView) {
         View scrollViewChild = pullView.getChildAt(0);
         int contentHeight = null != scrollViewChild?scrollViewChild.getHeight():0;  //内容高度
         int viewHeight = getHeight();   //视图高度

@@ -37,7 +37,7 @@ public class PullWebView extends PullViewBase<WebView> {
 //	}
 
 	@Override
-	public boolean isInTheHeader(WebView pullView) {
+	public boolean isCanPullHeader(WebView pullView) {
         float contentHeight = FloatMath.floor(pullView.getContentHeight() * pullView.getScale());   //内容高度
         int viewHeight = pullView.getHeight();  //视图高度
         if(contentHeight > viewHeight){
@@ -50,7 +50,7 @@ public class PullWebView extends PullViewBase<WebView> {
 	@SuppressLint("FloatMath")
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isInTheFooter(WebView pullView) {
+	public boolean isCanPullFooter(WebView pullView) {
         float contentHeight = FloatMath.floor(pullView.getContentHeight() * pullView.getScale());   //内容高度
         int viewHeight = pullView.getHeight();  //视图高度
         if(contentHeight > viewHeight){

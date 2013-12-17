@@ -1,10 +1,8 @@
 package me.xiaopan.pullview;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +10,18 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
 
-public abstract class PullViewBase<T extends View> extends LinearLayout implements GestureDetector.OnGestureListener{
+public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean self;
     private T pullView;
 	private State state;    //状态标识
 	private Scroller scroller;  //滚动器，用来回滚头部或尾部
-	private GestureDetector gestureDetector;    //手势识别器
+    private CompositeGestureDetector compositeGestureDetector;
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
+        compositeGestureDetector = new CompositeGestureDetector(context, this);
 	}
 
 	public PullViewBase(Context context) {
@@ -36,7 +35,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         self = true;
 		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         self = false;
-		gestureDetector = new GestureDetector(getContext(), this);
 		scroller = new Scroller(getContext(), new AccelerateDecelerateInterpolator());
 	}
 
@@ -81,7 +79,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			default : 
 				break;
 		}
-		gestureDetector.onTouchEvent(ev);
+        compositeGestureDetector.onTouchEvent(ev);
 		return result;
 	}
 
@@ -95,22 +93,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         rollback(Math.abs(getScrollY()));
     }
 
-    @Override
-	public boolean onDown(MotionEvent e) {
-		return true;
-	}
-
-	@Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-		return true;
-	}
-
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                logD("正在垂直拉伸头部，ScrollY="+getScrollY());
+                logD("正在垂直拉伸头部，ScrollY=" + getScrollY());
                 if(getScrollY() >= 0){
                     logD("头部回滚完毕");
                     state = State.NORMAL;
@@ -119,7 +107,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                logD("正在横向拉伸头部，ScrollX="+getScrollX());
+                logD("正在横向拉伸头部，ScrollX=" + getScrollX());
                 if(getScrollX() >= 0){
                     logD("头部回滚完毕");
                     state = State.NORMAL;
@@ -132,7 +120,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else if(state == State.PULL_FOOTER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                logD("正在垂直拉伸尾部，ScrollY="+getScrollY());
+                logD("正在垂直拉伸尾部，ScrollY=" + getScrollY());
                 if(getScrollY() <= 0){
                     logD("尾部回滚完毕");
                     state = State.NORMAL;
@@ -141,7 +129,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                logD("正在垂横向伸尾部，ScrollX="+getScrollX());
+                logD("正在垂横向伸尾部，ScrollX=" + getScrollX());
                 if(getScrollX() <= 0){
                     logD("尾部回滚完毕");
                     state = State.NORMAL;
@@ -152,7 +140,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return false;
             }
         }else if(distanceY < 0){
-            if(isInTheHeader(pullView)){
+            if(isCanPullHeader(pullView)){
                 logD("开始拉伸头部");
                 state = State.PULL_HEADER;
                 return true;
@@ -160,7 +148,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return false;
             }
         }else if(distanceY > 0){
-            if(isInTheFooter(pullView)){
+            if(isCanPullFooter(pullView)){
                 logD("开始拉伸尾部");
                 state = State.PULL_FOOTER;
                 return true;
@@ -178,7 +166,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	/**
 	 * 创建内容视图
-	 * @return
+	 * @return 内容视图
 	 */
 	public abstract T createPullView();
 
@@ -194,25 +182,25 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 //	 */
 //	public abstract View createFooterView();
 
+    /**
+     * 获取拉伸方向
+     * @return 拉伸方向
+     */
+    protected abstract PullOrientation getPullOrientation();
+
 	/**
-	 * 是否在头部
+	 * 是否可以拉头部
      * @param pullView 拉伸视图
-	 * @return
+	 * @return 是否可以拉头部
 	 */
-	public abstract boolean isInTheHeader(T pullView);
+	public abstract boolean isCanPullHeader(T pullView);
 	
 	/**
-	 * 是否在尾部
+	 * 是否可以拉尾部
      * @param pullView 拉伸视图
-	 * @return
+	 * @return 是否可以拉尾部
 	 */
-	public abstract boolean isInTheFooter(T pullView);
-	
-	/**
-	 * 获取拉伸方向
-	 * @return
-	 */
-	protected abstract PullOrientation getPullOrientation();
+	public abstract boolean isCanPullFooter(T pullView);
 	
 	/**
 	 * 滚动拉伸视图到头部
@@ -226,15 +214,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	 */
 	protected abstract void scrollPullViewToFooter(T pullView);
 
-	@Override
-	public void onShowPress(MotionEvent e) {}
-	
-	@Override
-	public void onLongPress(MotionEvent e) {}
-	
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {return false;}
-	
 	public void logI(String msg){
 		Log.i(PullViewBase.class.getSimpleName(), msg);
 	}
@@ -254,12 +233,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		/**
 		 * 垂直拉伸
 		 */
-		VERTICAL, 
+		VERTICAL,
 		
 		/**
 		 * 横向拉伸
 		 */
-		LANDSCAPE;
+		LANDSCAPE
 	}
 	
 	/**
@@ -289,6 +268,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		/**
 		 * 回滚尾部
 		 */
-		ROLLBACK_FOOTER;
+		ROLLBACK_FOOTER
 	}
 }
