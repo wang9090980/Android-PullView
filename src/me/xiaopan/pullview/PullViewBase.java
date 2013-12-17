@@ -13,7 +13,6 @@ import android.widget.Scroller;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements GestureDetector.OnGestureListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
-    private boolean interceptTouchEvent;    //决定是否拦截事件，拦截后子视图将无法获取事件
     private T pullView;
 	private State state;    //状态标识
 	private Scroller scroller;  //滚动器，用来回滚头部或尾部
@@ -62,16 +61,15 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		switch(ev.getAction()){
+		boolean result = super.dispatchTouchEvent(ev);
+        switch(ev.getAction()){
 			case MotionEvent.ACTION_UP :
 				logD("弹起");
                 if(state == State.PULL_HEADER){
                     rollback();
-                    interceptTouchEvent = false;
 					state = State.NORMAL;
 				}else if(state == State.PULL_FOOTER){
                     rollback(-Math.abs(getScrollY()));
-                    interceptTouchEvent = false;
 					state = State.NORMAL;
 				}
 				break;
@@ -81,7 +79,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 				break;
 		}
 		gestureDetector.onTouchEvent(ev);
-		return super.dispatchTouchEvent(ev);
+		return result;
 	}
 
     private void rollback(int dy){
@@ -92,11 +90,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
     private void rollback(){
         rollback(Math.abs(getScrollY()));
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return interceptTouchEvent;
     }
 
     @Override
@@ -111,7 +104,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        logD("distanceX="+distanceX+"; distanceY="+distanceY);
         if(state == State.PULL_HEADER){
             logD("正在拉伸头部");
             if(getPullOrientation() == PullOrientation.VERTICAL){
@@ -128,13 +120,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             }else{
                 scrollBy((int) (distanceX * elasticForce), 0);
             }
-//            scrollPullViewToFooter(pullView);
+            scrollPullViewToFooter(pullView);
             return true;
         }else if(distanceY < 0){
             if(isInTheHeader(pullView)){
                 logD("开始拉伸头部");
                 state = State.PULL_HEADER;
-                interceptTouchEvent = true;
                 return true;
             }else{
                 return false;
@@ -143,7 +134,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             if(isInTheFooter(pullView)){
                 logD("开始拉伸尾部");
                 state = State.PULL_FOOTER;
-                interceptTouchEvent = true;
                 return true;
             }else{
                 return false;
@@ -163,18 +153,18 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	 */
 	public abstract T createPullView();
 
-	/**
-	 * 创建头视图
-	 * @return
-	 */
-	public abstract View createHeaderView();
+//	/**
+//	 * 创建头部视图
+//	 * @return
+//	 */
+//	public abstract View createHeaderView();
+//
+//	/**
+//	 * 创建尾部视图
+//	 * @return
+//	 */
+//	public abstract View createFooterView();
 
-	/**
-	 * 建尾视图
-	 * @return
-	 */
-	public abstract View createFooterView();
-	
 	/**
 	 * 是否在头部
      * @param pullView 拉伸视图
@@ -200,7 +190,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
      * @param pullView 拉伸视图
 	 */
 	protected abstract void scrollPullViewToHeader(T pullView);
-	
+
 	/**
 	 * 滚动拉伸视图到尾部
      * @param pullView 拉伸视图

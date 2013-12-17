@@ -20,15 +20,15 @@ public abstract class PullScrollView extends PullViewBase<ScrollView> {
 		return new ScrollView(getContext());
 	}
 
-	@Override
-	public View createHeaderView() {
-		return null;
-	}
-
-	@Override
-	public View createFooterView() {
-		return null;
-	}
+//	@Override
+//	public View createHeaderView() {
+//		return null;
+//	}
+//
+//	@Override
+//	public View createFooterView() {
+//		return null;
+//	}
 
 	@Override
 	public boolean isInTheHeader(ScrollView pullView) {
