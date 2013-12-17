@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 
+/**
+ * 可拉的WebView
+ */
 public class PullWebView extends PullViewBase<WebView> {
 
 	public PullWebView(Context context, AttributeSet attrs) {

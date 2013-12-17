@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Pull View Example</string>
+    <string name="activty_pullScrollView">ScrollView</string>
+    <string name="activty_pullWebView">WebView</string>
 </resources>

@@ -1,7 +1,7 @@
 package me.xiaopan.pullview.activity;
 
 import me.xiaopan.pullview.PullWebView;
-import me.xiaopan.pullview.activity.util.WebViewManager;
+import me.xiaopan.pullview.util.WebViewManager;
 import me.xiaopan.pullview.example.R;
 import android.app.Activity;
 import android.os.Bundle;

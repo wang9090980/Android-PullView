@@ -5,6 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ScrollView;
 
+/**
+ * 可拉的垂直滚动视图
+ */
 public abstract class PullScrollView extends PullViewBase<ScrollView> {
 
 	public PullScrollView(Context context) {

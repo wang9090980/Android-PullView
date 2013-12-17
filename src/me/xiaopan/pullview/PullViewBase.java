@@ -108,8 +108,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             logD("正在拉伸头部");
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
+                if(getScrollY() == 0){
+                    state = State.NORMAL;
+                }
             }else{
                 scrollBy((int) (distanceX * elasticForce), 0);
+                if(getScrollX() == 0){
+                    state = State.NORMAL;
+                }
             }
             scrollPullViewToHeader(pullView);
             return true;
@@ -117,8 +123,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             logD("正在拉伸尾部");
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
+                if(getScrollY() == 0){
+                    state = State.NORMAL;
+                }
             }else{
                 scrollBy((int) (distanceX * elasticForce), 0);
+                if(getScrollX() == 0){
+                    state = State.NORMAL;
+                }
             }
             scrollPullViewToFooter(pullView);
             return true;

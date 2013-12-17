@@ -16,13 +16,15 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="me.xiaopan.pullview.activity.PullWebViewActivity"
+            android:name="me.xiaopan.pullview.activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="me.xiaopan.pullview.activity.PullScrollViewActivity" android:label="@string/activty_pullScrollView"/>
+        <activity android:name="me.xiaopan.pullview.activity.PullWebViewActivity" android:label="@string/activty_pullWebView"/>
     </application>
 
 </manifest>
