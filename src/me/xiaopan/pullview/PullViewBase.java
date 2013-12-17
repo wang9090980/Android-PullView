@@ -44,7 +44,16 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             ((ViewGroup) pullView).addView(child, index, params);
         }
 	}
-	
+
+    @Override
+    public void onScroll(boolean isHeader) {
+        if(isHeader){
+            scrollPullViewToHeader(pullView);
+        }else{
+            scrollPullViewToFooter(pullView);
+        }
+    }
+
     @Override
     public void onFinishScroll(boolean abort) {
         if(abort){

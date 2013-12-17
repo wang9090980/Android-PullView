@@ -22,7 +22,6 @@ public class PullListView extends PullAdapterViewBase<ListView> {
         ListView listView = new ListView(getContext());
         listView.setId(android.R.id.list);
         listView.setCacheColorHint(Color.TRANSPARENT);
-        listView.setBackgroundColor(Color.WHITE);
         return listView;
     }
 }

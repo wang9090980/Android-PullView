@@ -10,6 +10,7 @@ import android.widget.Scroller;
 public class SmoothScroller {
     private boolean abort;
     private boolean scrolling;
+    private boolean isHeader;
 	private View view;
     private Scroller scroller;
     private ExecuteRunnable executeRunnable;
@@ -29,6 +30,7 @@ public class SmoothScroller {
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
+        this.isHeader = isHeader;
         abort = false;
         scrolling = true;
         int currentScrollY = view.getScrollY();
@@ -57,6 +59,7 @@ public class SmoothScroller {
      * 滚动监听器
      */
     public interface OnScrollListener{
+       public void onScroll(boolean isHeader);
        public void onFinishScroll(boolean abort);
     }
 
@@ -77,6 +80,9 @@ public class SmoothScroller {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
                 view.scrollTo(view.getScrollX(), scroller.getCurrY());
+                if(onScrollListener != null){
+                    onScrollListener.onScroll(isHeader);
+                }
                 view.postDelayed(executeRunnable, 16);
             }else{
                 if(onScrollListener != null){
