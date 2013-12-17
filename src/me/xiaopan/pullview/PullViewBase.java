@@ -6,23 +6,23 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
-import android.widget.Scroller;
 
-public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener{
+public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private boolean rollbacking;    //回滚中
     private boolean abortAnimation;
     private T pullView; //被拉的视图
 	private State state;    //状态标识
-	private Scroller scroller;  //滚动器，用来回滚头部或尾部
+//	private Scroller scroller;  //滚动器，用来回滚头部或尾部
+    private SmoothScroller smoothScroller;
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		init();
+        smoothScroller = new SmoothScroller(this, this);
         compositeGestureDetector = new CompositeGestureDetector(context, this);
 	}
 
@@ -37,7 +37,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         addViewToSelf = true;
 		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
-		scroller = new Scroller(getContext(), new AccelerateDecelerateInterpolator());
+//		scroller = new Scroller(getContext(), new AccelerateDecelerateInterpolator());
 	}
 
 	@Override
@@ -51,25 +51,35 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	
 	@Override
 	public void computeScroll() {
-		if(scroller.computeScrollOffset()){
-			if(getPullOrientation() == PullOrientation.VERTICAL){
-                scrollTo(0, scroller.getCurrY());
-                invalidate();
-            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
-                scrollTo(scroller.getCurrX(), 0);
-                invalidate();
-            }
-            logD("回滚：未完成");
-		}else{
-            if(rollbacking){
-                if(!abortAnimation){
-                    logD("回滚：已完成");
-                    state = State.NORMAL;
-                }
-                rollbacking = false;
-            }
-        }
+//		if(scroller.computeScrollOffset()){
+//			if(getPullOrientation() == PullOrientation.VERTICAL){
+//                scrollTo(0, scroller.getCurrY());
+//                invalidate();
+//            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+//                scrollTo(scroller.getCurrX(), 0);
+//                invalidate();
+//            }
+//            logD("回滚：未完成");
+//		}else{
+//            if(rollbacking){
+//                if(!abortAnimation){
+//                    logD("回滚：已完成");
+//                    state = State.NORMAL;
+//                }
+//                rollbacking = false;
+//            }
+//        }
 	}
+
+    @Override
+    public void onFinishScroll(boolean abort) {
+        if(abort){
+            logD("回滚：中断");
+        }else{
+            logD("回滚：已完成");
+            state = State.NORMAL;
+        }
+    }
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -79,10 +89,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			case MotionEvent.ACTION_UP :
 				logD("弹起");
                 if(state == State.PULL_HEADER){
-                    rollback();
-				}else if(state == State.PULL_FOOTER){
-                    rollback(-Math.abs(getScrollY()));
-				}
+//                    rollback();
+                    smoothScroller.rollback(true);
+                }else if(state == State.PULL_FOOTER){
+//                    rollback(-Math.abs(getScrollY()));
+                    smoothScroller.rollback(false);
+                }
 				break;
 			case MotionEvent.ACTION_CANCEL :
 				break;
@@ -92,23 +104,26 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		return result;
 	}
 
-    private void rollback(int dy){
-        logD("回滚，开始位置="+getScrollY()+"；距离："+dy+"；耗时="+500);
-        scroller.startScroll(0, getScrollY(), 0, dy);
-        rollbacking = true;
-        abortAnimation = false;
-        invalidate();
-    }
+//    private void rollback(int dy){
+//        logD("回滚，开始位置="+getScrollY()+"；距离："+dy+"；耗时="+500);
+//        scroller.startScroll(0, getScrollY(), 0, dy);
+//        rollbacking = true;
+//        abortAnimation = false;
+//        invalidate();
+//    }
 
-    private void rollback(){
-        rollback(Math.abs(getScrollY()));
-    }
+//    private void rollback(){
+//        rollback(Math.abs(getScrollY()));
+//    }
 
     @Override
     public boolean onDown(MotionEvent e) {
-        if(scroller.computeScrollOffset()){
-            abortAnimation = true;
-            scroller.abortAnimation();
+//        if(scroller.computeScrollOffset()){
+//            abortAnimation = true;
+//            scroller.abortAnimation();
+//        }
+        if(smoothScroller.isScrolling()){
+            smoothScroller.abortScroll();
         }
         return true;
     }
