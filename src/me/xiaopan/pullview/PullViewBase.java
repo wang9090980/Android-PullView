@@ -139,7 +139,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             }else{
                 return false;
             }
-        }else if(distanceY < 0){
+        }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) < 0){
             if(isCanPullHeader(pullView)){
                 logD("开始拉伸头部");
                 state = State.PULL_HEADER;
@@ -147,7 +147,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             }else{
                 return false;
             }
-        }else if(distanceY > 0){
+        }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) > 0){
             if(isCanPullFooter(pullView)){
                 logD("开始拉伸尾部");
                 state = State.PULL_FOOTER;
