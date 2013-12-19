@@ -83,7 +83,7 @@ public class SmoothScroller {
                 if(onScrollListener != null){
                     onScrollListener.onScroll(isHeader);
                 }
-                view.postDelayed(executeRunnable, 16);
+                view.post(executeRunnable);
             }else{
                 if(onScrollListener != null){
                     onScrollListener.onFinishScroll(abort);

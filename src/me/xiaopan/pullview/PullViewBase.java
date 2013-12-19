@@ -47,11 +47,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
     @Override
     public void onScroll(boolean isHeader) {
-        if(isHeader){
-            scrollPullViewToHeader(pullView);
-        }else{
-            scrollPullViewToFooter(pullView);
-        }
+//        if(isHeader){
+//            scrollPullViewToHeader(pullView);
+//        }else{
+//            scrollPullViewToFooter(pullView);
+//        }
     }
 
     @Override

@@ -25,6 +25,8 @@ public class MainActivity extends ListActivity{
         List<TextAdapter.Text> entrys = new ArrayList<TextAdapter.Text>();
 
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullList), PullListActivity.class).create());
+        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullGrid), PullGridActivity.class).create());
+        entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullExpandableList), PullExpandableListActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullScroll), PullScrollActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullWeb), PullWebActivity.class).create());
 
