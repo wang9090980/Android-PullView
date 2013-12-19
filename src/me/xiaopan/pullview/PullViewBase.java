@@ -71,10 +71,22 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         switch(ev.getAction()){
 			case MotionEvent.ACTION_UP :
 				logD("弹起");
-                if(state == State.PULL_HEADER){
-                    smoothScroller.rollback(getPullOrientation(), true);
-                }else if(state == State.PULL_FOOTER){
-                    smoothScroller.rollback(getPullOrientation(), false);
+                if(getPullOrientation() == PullOrientation.VERTICAL){
+                	if(getScrollY() != 0){
+                		if(state == State.PULL_HEADER){
+                			smoothScroller.rollback(getPullOrientation(), true);
+                		}else if(state == State.PULL_FOOTER){
+                			smoothScroller.rollback(getPullOrientation(), false);
+                		}
+                	}
+                }else{
+                	if(getScrollX() != 0){
+                		if(state == State.PULL_HEADER){
+                			smoothScroller.rollback(getPullOrientation(), true);
+                		}else if(state == State.PULL_FOOTER){
+                			smoothScroller.rollback(getPullOrientation(), false);
+                		}
+                	}
                 }
 				break;
 			case MotionEvent.ACTION_CANCEL :
