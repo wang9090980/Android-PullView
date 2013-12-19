@@ -28,6 +28,7 @@
         <activity android:name="me.xiaopan.pullview.activity.PullGridActivity" android:label="@string/activty_pullGrid"/>
         <activity android:name="me.xiaopan.pullview.activity.PullExpandableListActivity" android:label="@string/activty_pullExpandableList"/>
         <activity android:name="me.xiaopan.pullview.activity.PullHorizontalScrollActivity" android:label="@string/activty_pullHorizontalScroll"/>
+        <activity android:name="me.xiaopan.pullview.activity.PullViewPagerActivity" android:label="@string/activty_pullViewPager"/>
     </application>
 
 </manifest>
