@@ -38,11 +38,11 @@ public class SmoothScroller {
         scrolling = true;
         if(pullOrientation == PullOrientation.VERTICAL){
         	int currentScrollY = view.getScrollY();
-        	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (isHeader?1:-1));
+        	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1));
         	view.post(executeRunnable);
         }else{
         	int currentScrollX = view.getScrollX();
-        	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (isHeader?1:-1), 0);
+        	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (currentScrollX<0?1:-1), 0);
         	view.post(executeRunnable);
         }
     }

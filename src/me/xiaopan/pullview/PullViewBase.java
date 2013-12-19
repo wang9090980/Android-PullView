@@ -77,6 +77,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 			smoothScroller.rollback(getPullOrientation(), true);
                 		}else if(state == State.PULL_FOOTER){
                 			smoothScroller.rollback(getPullOrientation(), false);
+                		}else{
+                			smoothScroller.rollback(getPullOrientation(), true);
                 		}
                 	}
                 }else{
@@ -85,6 +87,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 			smoothScroller.rollback(getPullOrientation(), true);
                 		}else if(state == State.PULL_FOOTER){
                 			smoothScroller.rollback(getPullOrientation(), false);
+                		}else{
+                			smoothScroller.rollback(getPullOrientation(), true);
                 		}
                 	}
                 }
