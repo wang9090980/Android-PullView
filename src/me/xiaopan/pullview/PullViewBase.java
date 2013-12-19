@@ -66,7 +66,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		boolean result = super.dispatchTouchEvent(ev);
+		super.dispatchTouchEvent(ev);
         compositeGestureDetector.onTouchEvent(ev);
         switch(ev.getAction()){
 			case MotionEvent.ACTION_UP :
@@ -82,8 +82,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			default :
 				break;
 		}
-        logD(""+ev.getAction());
-		return result;
+		return true;
 	}
 
     @Override
