@@ -20,7 +20,6 @@ import me.xiaoapn.easy.imageloader.AlphaScaleShowAnimationListener;
 import me.xiaoapn.easy.imageloader.ImageLoader;
 import me.xiaoapn.easy.imageloader.Options;
 import me.xiaopan.pullview.example.R;
-
 import android.app.Application;
 
 public class MyApplication extends Application {

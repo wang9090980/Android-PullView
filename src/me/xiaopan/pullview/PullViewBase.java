@@ -72,9 +72,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			case MotionEvent.ACTION_UP :
 				logD("弹起");
                 if(state == State.PULL_HEADER){
-                    smoothScroller.rollback(true);
+                    smoothScroller.rollback(getPullOrientation(), true);
                 }else if(state == State.PULL_FOOTER){
-                    smoothScroller.rollback(false);
+                    smoothScroller.rollback(getPullOrientation(), false);
                 }
 				break;
 			case MotionEvent.ACTION_CANCEL :

@@ -1,5 +1,6 @@
 package me.xiaopan.pullview;
 
+import me.xiaopan.pullview.PullViewBase.PullOrientation;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
@@ -15,6 +16,7 @@ public class SmoothScroller {
     private Scroller scroller;
     private ExecuteRunnable executeRunnable;
     private OnScrollListener onScrollListener;
+    private PullOrientation pullOrientation;
 
 	public SmoothScroller(View view, OnScrollListener onScrollListener){
 		this.view = view;
@@ -26,23 +28,30 @@ public class SmoothScroller {
     /**
      * 开始滚动
      */
-    public void startScroll(int endLocation, boolean isHeader){
+    public void startScroll(PullOrientation pullOrientation, int endLocation, boolean isHeader){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
+        this.pullOrientation = pullOrientation;
         this.isHeader = isHeader;
         abort = false;
         scrolling = true;
-        int currentScrollY = view.getScrollY();
-        scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (isHeader?1:-1));
-        view.post(executeRunnable);
+        if(pullOrientation == PullOrientation.VERTICAL){
+        	int currentScrollY = view.getScrollY();
+        	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (isHeader?1:-1));
+        	view.post(executeRunnable);
+        }else{
+        	int currentScrollX = view.getScrollX();
+        	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (isHeader?1:-1), 0);
+        	view.post(executeRunnable);
+        }
     }
 
     /**
      * 开始滚动
      */
-    public void rollback(boolean isHeader){
-        startScroll(0, isHeader);
+    public void rollback(PullOrientation pullOrientation, boolean isHeader){
+        startScroll(pullOrientation, 0, isHeader);
     }
 
     /**
@@ -79,7 +88,11 @@ public class SmoothScroller {
         public void run() {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
-                view.scrollTo(view.getScrollX(), scroller.getCurrY());
+                if(pullOrientation == PullOrientation.VERTICAL){
+                	view.scrollTo(view.getScrollX(), scroller.getCurrY());
+                }else{
+                	view.scrollTo(scroller.getCurrX(), view.getScrollY());
+                }
                 if(onScrollListener != null){
                     onScrollListener.onScroll(isHeader);
                 }

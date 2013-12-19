@@ -1,16 +1,14 @@
 package me.xiaopan.pullview.adapter;
 
+import java.util.List;
+
+import me.xiaopan.pullview.example.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.ExpandableListAdapter;
 import android.widget.TextView;
-
-import java.util.List;
-
-import me.xiaopan.pullview.example.R;
 
 /**
  * Created by xiaopan on 13-12-19.

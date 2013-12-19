@@ -1,6 +1,7 @@
 package me.xiaopan.pullview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ScrollView;
@@ -20,7 +21,9 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 
 	@Override
 	public ScrollView createPullView() {
-		return new ScrollView(getContext());
+		ScrollView scrollView = new ScrollView(getContext());
+		scrollView.setBackgroundColor(Color.WHITE);
+		return scrollView;
 	}
 
 //	@Override

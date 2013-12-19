@@ -18,7 +18,6 @@ package me.xiaopan.pullview.adapter;
 
 import me.xiaoapn.easy.imageloader.ImageLoader;
 import me.xiaopan.pullview.example.R;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
