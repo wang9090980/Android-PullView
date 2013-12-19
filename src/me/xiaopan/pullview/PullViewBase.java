@@ -82,6 +82,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			default :
 				break;
 		}
+        logD(""+ev.getAction());
 		return result;
 	}
 
