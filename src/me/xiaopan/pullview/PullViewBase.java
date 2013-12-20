@@ -13,7 +13,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
 	private State state;    //状态标识
-    private SmoothScroller smoothScroller;
+    private SmoothScroller smoothScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
@@ -70,36 +70,52 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         compositeGestureDetector.onTouchEvent(ev);
         switch(ev.getAction()){
 			case MotionEvent.ACTION_UP :
-				logD("弹起");
-                if(getPullOrientation() == PullOrientation.VERTICAL){
-                	if(getScrollY() != 0){
-                		if(state == State.PULL_HEADER){
-                			smoothScroller.rollback(getPullOrientation(), true);
-                		}else if(state == State.PULL_FOOTER){
-                			smoothScroller.rollback(getPullOrientation(), false);
-                		}else{
-                			smoothScroller.rollback(getPullOrientation(), true);
-                		}
-                	}
-                }else{
-                	if(getScrollX() != 0){
-                		if(state == State.PULL_HEADER){
-                			smoothScroller.rollback(getPullOrientation(), true);
-                		}else if(state == State.PULL_FOOTER){
-                			smoothScroller.rollback(getPullOrientation(), false);
-                		}else{
-                			smoothScroller.rollback(getPullOrientation(), true);
-                		}
-                	}
-                }
+                upOrCancel("弹起");
 				break;
 			case MotionEvent.ACTION_CANCEL :
+                upOrCancel("取消");
 				break;
 			default :
 				break;
 		}
 		return true;
 	}
+
+    private void upOrCancel(String typeName){
+        if(getPullOrientation() == PullOrientation.VERTICAL){
+            if(getScrollY() != 0){
+                if(state == State.PULL_HEADER){
+                    logD(typeName+"：垂直-回滚-头部");
+                    smoothScroller.rollback(getPullOrientation(), true);
+                }else if(state == State.PULL_FOOTER){
+                    logD(typeName+"：垂直-回滚-尾部");
+                    smoothScroller.rollback(getPullOrientation(), false);
+                }else{
+                    logD(typeName+"：垂直-回滚-没有目的");
+                    smoothScroller.rollback(getPullOrientation(), true);
+                }
+            }else{
+                logD(typeName+"：垂直-无需回滚");
+            }
+        }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+            if(getScrollX() != 0){
+                if(state == State.PULL_HEADER){
+                    logD(typeName+"：横向-回滚-头部");
+                    smoothScroller.rollback(getPullOrientation(), true);
+                }else if(state == State.PULL_FOOTER){
+                    logD(typeName+"：横向-回滚-尾部");
+                    smoothScroller.rollback(getPullOrientation(), false);
+                }else{
+                    logD(typeName+"：横向-回滚-没有目的");
+                    smoothScroller.rollback(getPullOrientation(), true);
+                }
+            }else{
+                logD(typeName+"：横向-无需回滚");
+            }
+        }else{
+            logD(typeName+"：未知的拉伸方向");
+        }
+    }
 
     @Override
     public boolean onDown(MotionEvent e) {
@@ -114,18 +130,18 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                logD("正在垂直拉伸头部，ScrollY=" + getScrollY());
+                logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
                 if(getScrollY() >= 0){
-                    logD("头部回滚完毕");
+                    logD("滚动：垂直-手动回滚头部完毕");
                     state = State.NORMAL;
                 }
                 scrollPullViewToHeader(pullView);
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                logD("正在横向拉伸头部，ScrollX=" + getScrollX());
+                logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
                 if(getScrollX() >= 0){
-                    logD("头部回滚完毕");
+                    logD("滚动：横向-手动回滚头部完毕");
                     state = State.NORMAL;
                 }
                 scrollPullViewToHeader(pullView);
@@ -136,18 +152,18 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else if(state == State.PULL_FOOTER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                logD("正在垂直拉伸尾部，ScrollY=" + getScrollY());
+                logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
                 if(getScrollY() <= 0){
-                    logD("尾部回滚完毕");
+                    logD("滚动：垂直-手动回滚尾部完毕");
                     state = State.NORMAL;
                 }
                 scrollPullViewToFooter(pullView);
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                logD("正在垂横向伸尾部，ScrollX=" + getScrollX());
+                logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
                 if(getScrollX() <= 0){
-                    logD("尾部回滚完毕");
+                    logD("滚动：横向-手动回滚尾部完毕");
                     state = State.NORMAL;
                 }
                 scrollPullViewToFooter(pullView);
@@ -157,7 +173,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             }
         }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) < 0){
             if(isCanPullHeader(pullView)){
-                logD("开始拉伸头部");
+                logD("滚动：开始拉伸头部");
                 state = State.PULL_HEADER;
                 return true;
             }else{
@@ -165,7 +181,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             }
         }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) > 0){
             if(isCanPullFooter(pullView)){
-                logD("开始拉伸尾部");
+                logD("滚动：开始拉伸尾部");
                 state = State.PULL_FOOTER;
                 return true;
             }else{
