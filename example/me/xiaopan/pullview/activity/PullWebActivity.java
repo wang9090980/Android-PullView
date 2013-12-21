@@ -16,7 +16,7 @@ public class PullWebActivity extends Activity {
 		
 		PullWebView pullWebView = (PullWebView) findViewById(R.id.pullWeb_web);
 		webViewManager = new WebViewManager(pullWebView.getPullView());
-		webViewManager.getWebView().loadUrl("http://www.qiushibaike.com/");
+		webViewManager.getWebView().loadUrl("http://www.baidu.com/");
 	}
 
 	@Override

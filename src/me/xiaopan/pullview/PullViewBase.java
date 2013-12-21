@@ -6,12 +6,14 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
+public abstract class PullViewBase<T extends View> extends FrameLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
+    private PullHeader pullHeader;  //拉伸头
 	private State state;    //状态标识
     private SmoothScroller smoothScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
@@ -27,7 +29,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	}
 	
 	private void init(){
-        setOrientation(LinearLayout.VERTICAL);
+//        setOrientation(LinearLayout.VERTICAL);
         smoothScroller = new SmoothScroller(this, this);
         compositeGestureDetector = new CompositeGestureDetector(getContext(), this);
 		pullView = createPullView();
@@ -202,17 +204,13 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	 */
 	public abstract T createPullView();
 
-//	/**
-//	 * 创建头部视图
-//	 * @return
-//	 */
-//	public abstract View createHeaderView();
-//
-//	/**
-//	 * 创建尾部视图
-//	 * @return
-//	 */
-//	public abstract View createFooterView();
+    /**
+     * 设置拉伸头
+     * @param pullHeader
+     */
+    public void setPullHeader(PullHeader pullHeader) {
+        this.pullHeader = pullHeader;
+    }
 
     /**
      * 获取拉伸方向
