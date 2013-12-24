@@ -47,8 +47,8 @@ public class PullToRefreshHeader extends PullHeader{
     }
 
     @Override
-    public void onScroll(int distance, boolean isLetGo) {
-    	super.onScroll(distance, isLetGo);
+    public void onScroll(int distance) {
+    	super.onScroll(distance);
     	//旋转箭头
         int height = getHeight();
     	matrix.setRotate(distance < height?((float) distance/height) * maxDegress:maxDegress, px, py);

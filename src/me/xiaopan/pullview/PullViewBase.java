@@ -51,7 +51,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
     @Override
     public void onScroll(boolean isHeader) {
-        callbackPull(true);
+        callbackPull();
     }
 
     @Override
@@ -133,7 +133,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                callbackPull(false);
+                callbackPull();
                 logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
                 if(getScrollY() >= 0){
                     logD("滚动：垂直-手动回滚头部完毕");
@@ -143,7 +143,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                callbackPull(false);
+                callbackPull();
                 logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
                 if(getScrollX() >= 0){
                     logD("滚动：横向-手动回滚头部完毕");
@@ -157,7 +157,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else if(state == State.PULL_FOOTER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                callbackPull(false);
+                callbackPull();
                 logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
                 if(getScrollY() <= 0){
                     logD("滚动：垂直-手动回滚尾部完毕");
@@ -167,7 +167,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                callbackPull(false);
+                callbackPull();
                 logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
                 if(getScrollX() <= 0){
                     logD("滚动：横向-手动回滚尾部完毕");
@@ -199,11 +199,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }
 	}
     
-    void callbackPull(boolean isLetGo){
+    void callbackPull(){
     	switch(state){
     		case PULL_HEADER :
     			if(pullHeader != null){
-    	        	pullHeader.onScroll(Math.abs(getPullOrientation() == PullOrientation.VERTICAL?getScrollY():getScrollX()), isLetGo);
+    	        	pullHeader.onScroll(Math.abs(getPullOrientation() == PullOrientation.VERTICAL?getScrollY():getScrollX()));
     	        }
     			break;
     		case PULL_FOOTER : 

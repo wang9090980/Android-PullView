@@ -19,7 +19,7 @@ public abstract class PullHeader extends LinearLayout{
         super(context, attrs);
     }
 
-    public void onScroll(int distance, boolean isLetGo){
+    public void onScroll(int distance){
     	switch(status){
     		case NORMAL:
     			if(distance >= getHeight()){
