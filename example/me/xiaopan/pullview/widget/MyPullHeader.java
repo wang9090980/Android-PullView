@@ -1,5 +1,6 @@
 package me.xiaopan.pullview.widget;
 
+import me.xiaopan.easy.android.util.ToastUtils;
 import me.xiaopan.pullview.PullHeader;
 import me.xiaopan.pullview.example.R;
 import android.content.Context;
@@ -43,17 +44,10 @@ public class MyPullHeader extends PullHeader{
     }
 
     @Override
-    public void onScroll(int distance) {
-        int height = getHeight();
-    	
-        //修改显示文字
-        if(distance > height){
-        	hintTextView.setText("松开刷新");
-        }else{
-        	hintTextView.setText("下拉刷新");
-        }
-    	
+    public void onScroll(int distance, boolean isLetGo) {
+    	super.onScroll(distance, isLetGo);
     	//旋转箭头
+        int height = getHeight();
     	matrix.setRotate(distance < height?((float) distance/height) * maxDegress:maxDegress, px, py);
     	arrowImageView.setImageMatrix(matrix);
     }
@@ -112,5 +106,20 @@ public class MyPullHeader extends PullHeader{
 	public void setIconURI(Uri uri){
 		arrowImageView.setImageURI(uri);
 		resetPxPy();
+	}
+
+	@Override
+	protected void onStateChange(Status newStatus) {
+		switch(newStatus){
+			case NORMAL:
+				hintTextView.setText("下拉刷新");
+				break;
+			case READY :
+				hintTextView.setText("松开刷新");
+				break;
+			case REFRESHING :
+				ToastUtils.toastS(getContext(), "刷新");
+				break;
+		}
 	}
 }
