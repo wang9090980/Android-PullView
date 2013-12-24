@@ -3,9 +3,11 @@ package me.xiaopan.pullview.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.xiaopan.pullview.PullListView;
 import me.xiaopan.pullview.adapter.TextAdapter;
 import me.xiaopan.pullview.domain.ActivityEntry;
 import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.widget.MyPullHeader;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,11 +18,13 @@ import android.widget.AdapterView;
  */
 public class MainActivity extends ListActivity{
     private TextAdapter textAdapter;
+    private PullListView pullListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+        pullListView = (PullListView) findViewById(R.id.pullList_list);
 
         List<TextAdapter.Text> entrys = new ArrayList<TextAdapter.Text>();
 
@@ -40,5 +44,7 @@ public class MainActivity extends ListActivity{
                 ((ActivityEntry) textAdapter.getTexts().get(position - getListView().getHeaderViewsCount())).clickHandle(MainActivity.this);
             }
         });
+        
+        pullListView.setPullHeader(new MyPullHeader(getBaseContext()));
     }
 }

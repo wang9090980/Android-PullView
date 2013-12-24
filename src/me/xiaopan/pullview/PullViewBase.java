@@ -1,15 +1,16 @@
 package me.xiaopan.pullview;
 
+import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-public abstract class PullViewBase<T extends View> extends FrameLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
+public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
@@ -29,7 +30,8 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
 	}
 	
 	private void init(){
-//        setOrientation(LinearLayout.VERTICAL);
+        setOrientation(LinearLayout.VERTICAL);
+        setGravity(Gravity.CENTER);
         smoothScroller = new SmoothScroller(this, this);
         compositeGestureDetector = new CompositeGestureDetector(getContext(), this);
 		pullView = createPullView();
@@ -49,6 +51,7 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
 
     @Override
     public void onScroll(boolean isHeader) {
+        callbackPull();
 //        if(isHeader){
 //            scrollPullViewToHeader(pullView);
 //        }else{
@@ -132,6 +135,7 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
+                callbackPull();
                 logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
                 if(getScrollY() >= 0){
                     logD("滚动：垂直-手动回滚头部完毕");
@@ -141,6 +145,7 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
+                callbackPull();
                 logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
                 if(getScrollX() >= 0){
                     logD("滚动：横向-手动回滚头部完毕");
@@ -154,6 +159,7 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
         }else if(state == State.PULL_FOOTER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
+                callbackPull();
                 logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
                 if(getScrollY() <= 0){
                     logD("滚动：垂直-手动回滚尾部完毕");
@@ -163,6 +169,7 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
+                callbackPull();
                 logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
                 if(getScrollX() <= 0){
                     logD("滚动：横向-手动回滚尾部完毕");
@@ -193,6 +200,20 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
             return false;
         }
 	}
+    
+    void callbackPull(){
+    	switch(state){
+    		case PULL_HEADER :
+    			if(pullHeader != null){
+    	        	pullHeader.onScroll(Math.abs(getPullOrientation() == PullOrientation.VERTICAL?getScrollY():getScrollX()));
+    	        }
+    			break;
+    		case PULL_FOOTER : 
+    			break;
+    		case NORMAL : 
+    			break;
+    	}
+    }
 
 	public T getPullView(){
 		return pullView;
@@ -210,6 +231,11 @@ public abstract class PullViewBase<T extends View> extends FrameLayout implement
      */
     public void setPullHeader(PullHeader pullHeader) {
         this.pullHeader = pullHeader;
+        addViewToSelf = true;
+        addView(pullHeader, 0);
+        addViewToSelf = false;
+        ViewUtils.measure(pullHeader);
+        setPadding(getPaddingLeft(), -pullHeader.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
     }
 
     /**

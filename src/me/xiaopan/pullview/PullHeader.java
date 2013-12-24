@@ -16,7 +16,7 @@ public class PullHeader extends LinearLayout{
         super(context, attrs);
     }
 
-    public void onScroll(){
-
+    public void onScroll(int distance){
+    	
     }
 }

@@ -8,6 +8,7 @@
     <string name="activty_pullExpandableList">ExpandableListView</string>
     <string name="activty_pullHorizontalScroll">HorizontalScrollView</string>
     <string name="activty_pullViewPager">ViewPager</string>
+    <string name="hint_pullToRefresh">下拉刷新</string>
 
     <string name="text_comment">
         腾讯移动互联网事业部（MIG）推出地图街景，是个“不大不小”的事。
