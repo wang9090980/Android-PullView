@@ -54,7 +54,6 @@ public class RolbackScroller {
         	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER){
         		startScroll(-pullViewBase.getPullHeader().getHeight());
         	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
-//        		startScroll(pullViewBase.getPullHeader().getHeight());
         		startScroll(0);
         	}else{
         		startScroll(0);
