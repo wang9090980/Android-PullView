@@ -10,13 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.GestureListener, SmoothScroller.OnScrollListener{
+public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.OnTouchListener, RolbackScroller.OnRollbackScrollListener{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
-    private PullHeader pullHeader;  //拉伸头
 	private State state;    //状态标识
-    private SmoothScroller smoothScroller;  //滚动器，用来回滚
+	private PullHeader pullHeader;  //拉伸头
+    private RolbackScroller rollbackScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
@@ -29,10 +29,13 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		init();
 	}
 	
+	/**
+	 * 初始化
+	 */
 	private void init(){
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
-        smoothScroller = new SmoothScroller(this, this);
+        rollbackScroller = new RolbackScroller(this, this);
         compositeGestureDetector = new CompositeGestureDetector(getContext(), this);
 		pullView = createPullView();
         addViewToSelf = true;
@@ -48,92 +51,32 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             ((ViewGroup) pullView).addView(child, index, params);
         }
 	}
-
-    @Override
-    public void onScroll(boolean isHeader) {
-        callbackPull();
-    }
-
-    @Override
-    public void onFinishScroll(boolean abort) {
-        if(abort){
-            logD("回滚：中断");
-        }else{
-            logD("回滚：已完成");
-            state = State.NORMAL;
-            if(pullHeader != null && pullHeader.getStatus() == PullHeader.Status.READY){
-            	pullHeader.trigger();
-            }
-        }
-    }
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		super.dispatchTouchEvent(ev);
         compositeGestureDetector.onTouchEvent(ev);
         switch(ev.getAction()){
-			case MotionEvent.ACTION_UP :
-                upOrCancel("弹起");
-				break;
-			case MotionEvent.ACTION_CANCEL :
-                upOrCancel("取消");
-				break;
-			default :
-				break;
+			case MotionEvent.ACTION_UP : handleUpTouchEvent("弹起"); break;
+			case MotionEvent.ACTION_CANCEL : handleUpTouchEvent("取消"); break;
 		}
 		return true;
 	}
-
-    private void upOrCancel(String typeName){
-        if(getPullOrientation() == PullOrientation.VERTICAL){
-            if(getScrollY() != 0){
-                if(state == State.PULL_HEADER){
-                    logD(typeName+"：垂直-回滚-头部");
-                    smoothScroller.rollback(getPullOrientation(), true);
-                }else if(state == State.PULL_FOOTER){
-                    logD(typeName+"：垂直-回滚-尾部");
-                    smoothScroller.rollback(getPullOrientation(), false);
-                }else{
-                    logD(typeName+"：垂直-回滚-没有目的");
-                    smoothScroller.rollback(getPullOrientation(), true);
-                }
-            }else{
-                logD(typeName+"：垂直-无需回滚");
-            }
-        }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
-            if(getScrollX() != 0){
-                if(state == State.PULL_HEADER){
-                    logD(typeName+"：横向-回滚-头部");
-                    smoothScroller.rollback(getPullOrientation(), true);
-                }else if(state == State.PULL_FOOTER){
-                    logD(typeName+"：横向-回滚-尾部");
-                    smoothScroller.rollback(getPullOrientation(), false);
-                }else{
-                    logD(typeName+"：横向-回滚-没有目的");
-                    smoothScroller.rollback(getPullOrientation(), true);
-                }
-            }else{
-                logD(typeName+"：横向-无需回滚");
-            }
-        }else{
-            logD(typeName+"：未知的拉伸方向");
-        }
-    }
-
+    
     @Override
-    public boolean onDown(MotionEvent e) {
-        if(smoothScroller.isScrolling()){
-            smoothScroller.abortScroll();
+    public boolean onTouchDown(MotionEvent e) {
+        if(rollbackScroller.isScrolling()){
+            rollbackScroller.abortScroll();
         }
         return true;
     }
 
     @Override
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+	public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if(state == State.PULL_HEADER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                callbackPull();
+                handleScrollCallback();
                 logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
                 if(getScrollY() >= 0){
                     logD("滚动：垂直-手动回滚头部完毕");
@@ -143,7 +86,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                callbackPull();
+                handleScrollCallback();
                 logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
                 if(getScrollX() >= 0){
                     logD("滚动：横向-手动回滚头部完毕");
@@ -157,7 +100,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else if(state == State.PULL_FOOTER){
             if(getPullOrientation() == PullOrientation.VERTICAL){
                 scrollBy(0, (int) (distanceY * elasticForce));
-                callbackPull();
+                handleScrollCallback();
                 logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
                 if(getScrollY() <= 0){
                     logD("滚动：垂直-手动回滚尾部完毕");
@@ -167,7 +110,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
                 return true;
             }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
                 scrollBy((int) (distanceX * elasticForce), 0);
-                callbackPull();
+                handleScrollCallback();
                 logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
                 if(getScrollX() <= 0){
                     logD("滚动：横向-手动回滚尾部完毕");
@@ -199,7 +142,10 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }
 	}
     
-    void callbackPull(){
+    /**
+     * 处理滚动回调
+     */
+    private void handleScrollCallback(){
     	switch(state){
     		case PULL_HEADER :
     			if(pullHeader != null){
@@ -211,6 +157,64 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     		case NORMAL : 
     			break;
     	}
+    }
+
+    /**
+     * 处理弹起事件
+     * @param eventActionName
+     */
+    private void handleUpTouchEvent(String eventActionName){
+        if(getPullOrientation() == PullOrientation.VERTICAL){
+            if(getScrollY() != 0){
+                if(state == State.PULL_HEADER){
+                    logD(eventActionName+"：垂直-回滚-头部");
+                    rollbackScroller.rollback();
+                }else if(state == State.PULL_FOOTER){
+                    logD(eventActionName+"：垂直-回滚-尾部");
+                    rollbackScroller.rollback();
+                }else{
+                    logD(eventActionName+"：垂直-回滚-没有目的");
+                    rollbackScroller.rollback();
+                }
+            }else{
+                logD(eventActionName+"：垂直-无需回滚");
+            }
+        }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+            if(getScrollX() != 0){
+                if(state == State.PULL_HEADER){
+                    logD(eventActionName+"：横向-回滚-头部");
+                    rollbackScroller.rollback();
+                }else if(state == State.PULL_FOOTER){
+                    logD(eventActionName+"：横向-回滚-尾部");
+                    rollbackScroller.rollback();
+                }else{
+                    logD(eventActionName+"：横向-回滚-没有目的");
+                    rollbackScroller.rollback();
+                }
+            }else{
+                logD(eventActionName+"：横向-无需回滚");
+            }
+        }else{
+            logD(eventActionName+"：未知的拉伸方向");
+        }
+    }
+
+    @Override
+    public void onRollbackScroll() {
+        handleScrollCallback();
+    }
+
+    @Override
+    public void onRollbackComplete(boolean isForceAbort) {
+        if(isForceAbort){
+            logD("回滚：中断");
+        }else{
+            logD("回滚：已完成");
+            state = State.NORMAL;
+            if(pullHeader != null && pullHeader.getStatus() == PullHeader.Status.READY){
+            	pullHeader.trigger();
+            }
+        }
     }
 
 	public T getPullView(){
@@ -318,5 +322,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	public PullHeader getPullHeader() {
 		return pullHeader;
+	}
+
+	public RolbackScroller getRollbackScroller() {
+		return rollbackScroller;
 	}
 }

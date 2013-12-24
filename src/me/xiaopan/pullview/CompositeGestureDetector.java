@@ -8,11 +8,11 @@ import android.view.MotionEvent;
  * 综合手势识别器
  */
 public class CompositeGestureDetector implements GestureDetector.OnGestureListener{
-    private GestureListener gestureListener;
     private GestureDetector gestureDetector;    //手势识别器
+    private OnTouchListener onTouchListener;
 
-    public CompositeGestureDetector(Context context, GestureListener gestureListener) {
-        this.gestureListener = gestureListener;
+    public CompositeGestureDetector(Context context, OnTouchListener onTouchListener) {
+        this.onTouchListener = onTouchListener;
         gestureDetector = new GestureDetector(context, this);
     }
 
@@ -22,7 +22,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
 
     @Override
     public boolean onDown(MotionEvent e) {
-        return gestureListener.onDown(e);
+        return onTouchListener.onTouchDown(e);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return gestureListener.onScroll(e1, e2, distanceX, distanceY);
+        return onTouchListener.onTouchScroll(e1, e2, distanceX, distanceY);
     }
 
     @Override
@@ -50,8 +50,25 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
         return true;
     }
 
-    public interface GestureListener{
-        public boolean onDown(MotionEvent e);
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
+    /**
+     * 触摸监听器
+     */
+    public interface OnTouchListener{
+        /**
+         * 当触摸屏幕并按下
+         * @param e
+         * @return
+         */
+        public boolean onTouchDown(MotionEvent e);
+        
+        /**
+         * 当触摸屏幕并滚动
+         * @param e1
+         * @param e2
+         * @param distanceX
+         * @param distanceY
+         * @return
+         */
+        public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
     }
 }

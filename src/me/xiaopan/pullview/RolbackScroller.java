@@ -5,22 +5,20 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
 /**
- * 平滑滚动器
+ * 回滚滚动器
  */
-public class SmoothScroller {
+public class RolbackScroller {
     private boolean abort;
     private boolean scrolling;
-    private boolean isHeader;
 	private PullViewBase<?> pullViewBase;
     private Scroller scroller;
     private ExecuteRunnable executeRunnable;
-    private OnScrollListener onScrollListener;
-    private PullOrientation pullOrientation;
+    private OnRollbackScrollListener onRollbackScrollListener;
     private int duration = 350;
 
-	public SmoothScroller(PullViewBase<?> view, OnScrollListener onScrollListener){
+	public RolbackScroller(PullViewBase<?> view, OnRollbackScrollListener onRollbackScrollListener){
 		this.pullViewBase = view;
-		this.onScrollListener = onScrollListener;
+		this.onRollbackScrollListener = onRollbackScrollListener;
         this.executeRunnable = new ExecuteRunnable();
         this.scroller = new Scroller(view.getContext(), new AccelerateDecelerateInterpolator());
 	}
@@ -28,15 +26,13 @@ public class SmoothScroller {
     /**
      * 开始滚动
      */
-    public void startScroll(PullOrientation pullOrientation, int endLocation, boolean isHeader){
+    public void startScroll(int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
-        this.pullOrientation = pullOrientation;
-        this.isHeader = isHeader;
         abort = false;
         scrolling = true;
-        if(pullOrientation == PullOrientation.VERTICAL){
+        if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
         	int currentScrollY = pullViewBase.getScrollY();
         	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1), duration);
         	pullViewBase.post(executeRunnable);
@@ -50,11 +46,11 @@ public class SmoothScroller {
     /**
      * 开始滚动
      */
-    public void rollback(PullOrientation pullOrientation, boolean isHeader){
+    public void rollback(){
         if(pullViewBase.getPullHeader() != null && pullViewBase.getPullHeader().getStatus() != PullHeader.Status.NORMAL){
-        	startScroll(pullOrientation, -pullViewBase.getPullHeader().getHeight(), isHeader);
+        	startScroll(-pullViewBase.getPullHeader().getHeight());
         }else{
-        	startScroll(pullOrientation, 0, isHeader);
+        	startScroll(0);
         }
     }
 
@@ -69,11 +65,19 @@ public class SmoothScroller {
     }
 
     /**
-     * 滚动监听器
+     * 回滚滚动监听器
      */
-    public interface OnScrollListener{
-       public void onScroll(boolean isHeader);
-       public void onFinishScroll(boolean abort);
+    public interface OnRollbackScrollListener{
+    	/**
+    	 * 回滚
+    	 */
+    	public void onRollbackScroll();
+    	
+    	/**
+    	 * 回滚完成
+    	 * @param isForceAbort 是否被强行中止
+    	 */
+    	public void onRollbackComplete(boolean isForceAbort);
     }
 
     /**
@@ -92,18 +96,18 @@ public class SmoothScroller {
         public void run() {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
-                if(pullOrientation == PullOrientation.VERTICAL){
+                if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
                 	pullViewBase.scrollTo(pullViewBase.getScrollX(), scroller.getCurrY());
                 }else{
                 	pullViewBase.scrollTo(scroller.getCurrX(), pullViewBase.getScrollY());
                 }
-                if(onScrollListener != null){
-                    onScrollListener.onScroll(isHeader);
+                if(onRollbackScrollListener != null){
+                    onRollbackScrollListener.onRollbackScroll();
                 }
                 pullViewBase.post(executeRunnable);
             }else{
-                if(onScrollListener != null){
-                    onScrollListener.onFinishScroll(abort);
+                if(onRollbackScrollListener != null){
+                    onRollbackScrollListener.onRollbackComplete(abort);
                 }
                 scrolling = false;
             }

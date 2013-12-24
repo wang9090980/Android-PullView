@@ -35,6 +35,8 @@ public abstract class PullHeader extends LinearLayout{
     			break;
     		case REFRESHING : 
     			break;
+    		case REFRESHING_TO_NORMAL : 
+    			break;
     	}
     }
     
@@ -47,17 +49,27 @@ public abstract class PullHeader extends LinearLayout{
 		onStateChange(status);
     }
     
+    /**
+     * 完成
+     */
+    public void complete(){
+    	status = Status.REFRESHING_TO_NORMAL;
+		onStatusChangeListener.onComplete();
+    	onStateChange(status);
+    }
+    
     protected abstract void onStateChange(Status newStatus);
     
     /**
      * 状态
      */
     public enum Status{
-    	NORMAL, READY, REFRESHING,
+    	NORMAL, READY, REFRESHING, REFRESHING_TO_NORMAL,
     }
     
     public interface OnStatusChangeListener{
     	public void onShow();
+    	public void onComplete();
     }
 
 	public Status getStatus() {

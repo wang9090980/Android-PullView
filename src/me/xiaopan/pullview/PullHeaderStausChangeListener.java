@@ -13,4 +13,9 @@ public class PullHeaderStausChangeListener implements OnStatusChangeListener {
 	public void onShow() {
 		pullViewBase.setPadding(pullViewBase.getPaddingLeft(), -pullViewBase.getPullHeader().getHeight(), pullViewBase.getPaddingRight(), pullViewBase.getPaddingBottom());
 	}
+
+	@Override
+	public void onComplete() {
+		pullViewBase.getRollbackScroller().rollback();
+	}
 }
