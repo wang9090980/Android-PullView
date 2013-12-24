@@ -7,7 +7,7 @@ import me.xiaopan.pullview.PullListView;
 import me.xiaopan.pullview.adapter.TextAdapter;
 import me.xiaopan.pullview.domain.ActivityEntry;
 import me.xiaopan.pullview.example.R;
-import me.xiaopan.pullview.widget.MyPullHeader;
+import me.xiaopan.pullview.widget.PullToRefreshHeader;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -45,6 +45,6 @@ public class MainActivity extends ListActivity{
             }
         });
         
-        pullListView.setPullHeader(new MyPullHeader(getBaseContext()));
+        pullListView.setPullHeader(new PullToRefreshHeader(getBaseContext()));
     }
 }

@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
  */
 public abstract class PullHeader extends LinearLayout{
     private Status status = Status.NORMAL;
+    private OnStatusChangeListener onStatusChangeListener;
     
 	public PullHeader(Context context) {
         super(context);
@@ -18,7 +19,7 @@ public abstract class PullHeader extends LinearLayout{
         super(context, attrs);
     }
 
-    protected void onScroll(int distance, boolean isLetGo){
+    public void onScroll(int distance, boolean isLetGo){
     	switch(status){
     		case NORMAL:
     			if(distance >= getHeight()){
@@ -27,18 +28,23 @@ public abstract class PullHeader extends LinearLayout{
     			}
     			break;
     		case READY :
-    			if(distance <= getHeight()){
-    				if(isLetGo){
-    					status = Status.REFRESHING;
-    				}else{
-    					status = Status.NORMAL;
-    				}
+    			if(distance < getHeight()){
+					status = Status.NORMAL;
     				onStateChange(status);
     			}
     			break;
-			default:
-				break;
+    		case REFRESHING : 
+    			break;
     	}
+    }
+    
+    /**
+     * 触发
+     */
+    public void trigger(){
+    	status = Status.REFRESHING;
+		onStatusChangeListener.onShow();
+		onStateChange(status);
     }
     
     protected abstract void onStateChange(Status newStatus);
@@ -49,4 +55,25 @@ public abstract class PullHeader extends LinearLayout{
     public enum Status{
     	NORMAL, READY, REFRESHING,
     }
+    
+    public interface OnStatusChangeListener{
+    	public void onShow();
+    }
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public OnStatusChangeListener getOnStatusChangeListener() {
+		return onStatusChangeListener;
+	}
+
+	public void setOnStatusChangeListener(
+			OnStatusChangeListener onStatusChangeListener) {
+		this.onStatusChangeListener = onStatusChangeListener;
+	}
 }

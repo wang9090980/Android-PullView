@@ -1,6 +1,5 @@
 package me.xiaopan.pullview.widget;
 
-import me.xiaopan.easy.android.util.ToastUtils;
 import me.xiaopan.pullview.PullHeader;
 import me.xiaopan.pullview.example.R;
 import android.content.Context;
@@ -10,26 +9,29 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
- * Created by XIAOPAN on 13-12-21.
+ * 下拉刷新头
  */
-public class MyPullHeader extends PullHeader{
+public class PullToRefreshHeader extends PullHeader{
 	private int maxDegress = 180;
+	private float px, py;
+	private Matrix matrix;
     private TextView hintTextView;
     private ImageView arrowImageView;
-    private Matrix matrix;
-    private float px, py;
+    private ProgressBar progressBar;
 
-    public MyPullHeader(Context context) {
+    public PullToRefreshHeader(Context context) {
         super(context);
         init();
     }
 
-    public MyPullHeader(Context context, AttributeSet attrs) {
+    public PullToRefreshHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -39,6 +41,7 @@ public class MyPullHeader extends PullHeader{
         hintTextView = (TextView) findViewById(R.id.text_headerPull_hint);
         arrowImageView = (ImageView) findViewById(R.id.image_headerPull_arrow);
         arrowImageView.setScaleType(ScaleType.MATRIX);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar_headerPull);
         resetPxPy();
         matrix = new Matrix();
     }
@@ -113,12 +116,16 @@ public class MyPullHeader extends PullHeader{
 		switch(newStatus){
 			case NORMAL:
 				hintTextView.setText("下拉刷新");
+				arrowImageView.setVisibility(View.VISIBLE);
+				progressBar.setVisibility(View.INVISIBLE);
 				break;
 			case READY :
 				hintTextView.setText("松开刷新");
 				break;
 			case REFRESHING :
-				ToastUtils.toastS(getContext(), "刷新");
+				hintTextView.setText("正在刷新…");
+				arrowImageView.setVisibility(View.INVISIBLE);
+				progressBar.setVisibility(View.VISIBLE);
 				break;
 		}
 	}

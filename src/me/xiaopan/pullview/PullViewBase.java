@@ -52,11 +52,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     @Override
     public void onScroll(boolean isHeader) {
         callbackPull(true);
-//        if(isHeader){
-//            scrollPullViewToHeader(pullView);
-//        }else{
-//            scrollPullViewToFooter(pullView);
-//        }
     }
 
     @Override
@@ -66,6 +61,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else{
             logD("回滚：已完成");
             state = State.NORMAL;
+            if(pullHeader != null && pullHeader.getStatus() == PullHeader.Status.READY){
+            	pullHeader.trigger();
+            }
         }
     }
 	
@@ -231,6 +229,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
      */
     public void setPullHeader(PullHeader pullHeader) {
         this.pullHeader = pullHeader;
+        pullHeader.setOnStatusChangeListener(new PullHeaderStausChangeListener(this));
         addViewToSelf = true;
         addView(pullHeader, 0);
         addViewToSelf = false;
@@ -315,5 +314,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		 * 拉伸尾部
 		 */
 		PULL_FOOTER, 
+	}
+
+	public PullHeader getPullHeader() {
+		return pullHeader;
 	}
 }

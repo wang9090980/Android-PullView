@@ -1,7 +1,6 @@
 package me.xiaopan.pullview;
 
 import me.xiaopan.pullview.PullViewBase.PullOrientation;
-import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
@@ -12,14 +11,15 @@ public class SmoothScroller {
     private boolean abort;
     private boolean scrolling;
     private boolean isHeader;
-	private View view;
+	private PullViewBase<?> pullViewBase;
     private Scroller scroller;
     private ExecuteRunnable executeRunnable;
     private OnScrollListener onScrollListener;
     private PullOrientation pullOrientation;
+    private int duration = 350;
 
-	public SmoothScroller(View view, OnScrollListener onScrollListener){
-		this.view = view;
+	public SmoothScroller(PullViewBase<?> view, OnScrollListener onScrollListener){
+		this.pullViewBase = view;
 		this.onScrollListener = onScrollListener;
         this.executeRunnable = new ExecuteRunnable();
         this.scroller = new Scroller(view.getContext(), new AccelerateDecelerateInterpolator());
@@ -37,13 +37,13 @@ public class SmoothScroller {
         abort = false;
         scrolling = true;
         if(pullOrientation == PullOrientation.VERTICAL){
-        	int currentScrollY = view.getScrollY();
-        	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1));
-        	view.post(executeRunnable);
+        	int currentScrollY = pullViewBase.getScrollY();
+        	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1), duration);
+        	pullViewBase.post(executeRunnable);
         }else{
-        	int currentScrollX = view.getScrollX();
-        	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (currentScrollX<0?1:-1), 0);
-        	view.post(executeRunnable);
+        	int currentScrollX = pullViewBase.getScrollX();
+        	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (currentScrollX<0?1:-1), 0, duration);
+        	pullViewBase.post(executeRunnable);
         }
     }
 
@@ -51,7 +51,11 @@ public class SmoothScroller {
      * 开始滚动
      */
     public void rollback(PullOrientation pullOrientation, boolean isHeader){
-        startScroll(pullOrientation, 0, isHeader);
+        if(pullViewBase.getPullHeader() != null && pullViewBase.getPullHeader().getStatus() != PullHeader.Status.NORMAL){
+        	startScroll(pullOrientation, -pullViewBase.getPullHeader().getHeight(), isHeader);
+        }else{
+        	startScroll(pullOrientation, 0, isHeader);
+        }
     }
 
     /**
@@ -89,14 +93,14 @@ public class SmoothScroller {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
                 if(pullOrientation == PullOrientation.VERTICAL){
-                	view.scrollTo(view.getScrollX(), scroller.getCurrY());
+                	pullViewBase.scrollTo(pullViewBase.getScrollX(), scroller.getCurrY());
                 }else{
-                	view.scrollTo(scroller.getCurrX(), view.getScrollY());
+                	pullViewBase.scrollTo(scroller.getCurrX(), pullViewBase.getScrollY());
                 }
                 if(onScrollListener != null){
                     onScrollListener.onScroll(isHeader);
                 }
-                view.post(executeRunnable);
+                pullViewBase.post(executeRunnable);
             }else{
                 if(onScrollListener != null){
                     onScrollListener.onFinishScroll(abort);
@@ -105,4 +109,12 @@ public class SmoothScroller {
             }
         }
     }
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
 }
