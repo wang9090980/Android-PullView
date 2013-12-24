@@ -211,8 +211,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         }else{
             logD("回滚：已完成");
             state = State.NORMAL;
-            if(pullHeader != null && pullHeader.getStatus() == PullHeader.Status.READY){
-            	pullHeader.trigger();
+            if(pullHeader != null){
+            	if(pullHeader.getStatus() == PullHeader.Status.READY){
+            		pullHeader.onTrigger();
+            	}else if(pullHeader.getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
+            		pullHeader.onComplete();
+            	}
             }
         }
     }

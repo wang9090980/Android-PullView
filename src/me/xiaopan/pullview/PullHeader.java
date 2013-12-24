@@ -24,51 +24,75 @@ public abstract class PullHeader extends LinearLayout{
     		case NORMAL:
     			if(distance >= getHeight()){
     				status = Status.READY;
-    				onStateChange(status);
+    				onStatusChange(status);
     			}
     			break;
     		case READY :
     			if(distance < getHeight()){
 					status = Status.NORMAL;
-    				onStateChange(status);
+    				onStatusChange(status);
     			}
     			break;
-    		case REFRESHING : 
+    		case TRIGGER : 
     			break;
-    		case REFRESHING_TO_NORMAL : 
+    		case TRIGGER_TO_NORMAL : 
     			break;
     	}
     }
     
     /**
-     * 触发
+     * 当触发
      */
-    public void trigger(){
-    	status = Status.REFRESHING;
-		onStatusChangeListener.onShow();
-		onStateChange(status);
+    public void onTrigger(){
+    	status = Status.TRIGGER;
+		onStatusChange(status);
+    }
+    
+    /**
+     * 当完成
+     */
+    public void onComplete(){
+    	status = Status.NORMAL;
+		onStatusChange(status);
     }
     
     /**
      * 完成
      */
     public void complete(){
-    	status = Status.REFRESHING_TO_NORMAL;
+    	status = Status.TRIGGER_TO_NORMAL;
 		onStatusChangeListener.onComplete();
-    	onStateChange(status);
+    	onStatusChange(status);
     }
     
-    protected abstract void onStateChange(Status newStatus);
+    protected abstract void onStatusChange(Status newStatus);
     
     /**
      * 状态
      */
     public enum Status{
-    	NORMAL, READY, REFRESHING, REFRESHING_TO_NORMAL,
+    	/**
+    	 * 正常
+    	 */
+    	NORMAL, 
+    	
+    	/**
+    	 * 准备触发
+    	 */
+    	READY, 
+    	
+    	/**
+    	 * 触发
+    	 */
+    	TRIGGER, 
+    	
+    	/**
+    	 * 触发到正常
+    	 */
+    	TRIGGER_TO_NORMAL,
     }
     
     public interface OnStatusChangeListener{
-    	public void onShow();
     	public void onComplete();
     }
 

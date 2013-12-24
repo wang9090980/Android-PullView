@@ -25,6 +25,7 @@ public class PullToRefreshHeader extends PullHeader{
     private TextView hintTextView;
     private ImageView arrowImageView;
     private ProgressBar progressBar;
+    private OnRefreshListener onRefreshListener;
 
     public PullToRefreshHeader(Context context) {
         super(context);
@@ -112,21 +113,42 @@ public class PullToRefreshHeader extends PullHeader{
 	}
 
 	@Override
-	protected void onStateChange(Status newStatus) {
+	protected void onStatusChange(Status newStatus) {
 		switch(newStatus){
 			case NORMAL:
 				hintTextView.setText("下拉刷新");
 				arrowImageView.setVisibility(View.VISIBLE);
 				progressBar.setVisibility(View.INVISIBLE);
+				if(onRefreshListener != null){
+					onRefreshListener.onNormal();
+				}
 				break;
 			case READY :
 				hintTextView.setText("松开刷新");
+				if(onRefreshListener != null){
+					onRefreshListener.onReady();
+				}
 				break;
-			case REFRESHING :
+			case TRIGGER :
 				hintTextView.setText("正在刷新…");
 				arrowImageView.setVisibility(View.INVISIBLE);
 				progressBar.setVisibility(View.VISIBLE);
+				if(onRefreshListener != null){
+					onRefreshListener.onRefresh();
+				}
+				break;
+			case TRIGGER_TO_NORMAL : 
 				break;
 		}
+	}
+	
+	public interface OnRefreshListener{
+		public void onNormal();
+		public void onReady();
+		public void onRefresh();
+	}
+
+	public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
+		this.onRefreshListener = onRefreshListener;
 	}
 }
