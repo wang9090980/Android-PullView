@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.OnTouchListener, RolbackScroller.OnRollbackScrollListener{
+	private int minScrollValue;	//最小滚动值
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
@@ -237,7 +238,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
      */
     public void setPullHeader(PullHeader pullHeader) {
         this.pullHeader = pullHeader;
-        pullHeader.setOnStatusChangeListener(new PullHeaderStausChangeListener(this));
+        pullHeader.setOnStatusChangeListener(new PullHeaderListener(this));
         addViewToSelf = true;
         addView(pullHeader, 0);
         addViewToSelf = false;
@@ -330,5 +331,13 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	public RolbackScroller getRollbackScroller() {
 		return rollbackScroller;
+	}
+
+	int getMinScrollValue() {
+		return minScrollValue;
+	}
+
+	void setMinScrollValue(int minScrollValue) {
+		this.minScrollValue = minScrollValue;
 	}
 }

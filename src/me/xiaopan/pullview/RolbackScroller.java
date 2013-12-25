@@ -27,7 +27,7 @@ public class RolbackScroller {
      * 回滚
      * @param endLocation 结束位置
      */
-    private void startScroll(int endLocation){
+	public void startScroll(int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
@@ -48,19 +48,7 @@ public class RolbackScroller {
      * 回滚
      */
     public void rollback(){
-        if(pullViewBase.getPullHeader() != null){
-        	if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.READY){
-        		startScroll(-pullViewBase.getPullHeader().getHeight());
-        	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER){
-        		startScroll(-pullViewBase.getPullHeader().getHeight());
-        	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
-        		startScroll(0);
-        	}else{
-        		startScroll(0);
-        	}
-        }else{
-        	startScroll(0);
-        }
+    	startScroll(pullViewBase.getMinScrollValue());
     }
 
     /**
