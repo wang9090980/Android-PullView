@@ -8,6 +8,7 @@ import android.widget.Scroller;
  * 回滚滚动器
  */
 public class RolbackScroller {
+	private int minScrollValue;	//最小滚动值
     private boolean abort;
     private boolean scrolling;
 	private PullViewBase<?> pullViewBase;
@@ -48,7 +49,7 @@ public class RolbackScroller {
      * 回滚
      */
     public void rollback(){
-    	startScroll(pullViewBase.getMinScrollValue());
+    	startScroll(getMinScrollValue());
     }
 
     /**
@@ -117,5 +118,13 @@ public class RolbackScroller {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
+	}
+
+	int getMinScrollValue() {
+		return minScrollValue;
+	}
+
+	void setMinScrollValue(int minScrollValue) {
+		this.minScrollValue = minScrollValue;
 	}
 }

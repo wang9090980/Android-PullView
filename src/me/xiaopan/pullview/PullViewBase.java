@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.OnTouchListener, RolbackScroller.OnRollbackScrollListener{
-	private int minScrollValue;	//最小滚动值
+	private boolean showing;
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
@@ -74,73 +74,64 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
     @Override
 	public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if(state == State.PULL_HEADER){
-            if(getPullOrientation() == PullOrientation.VERTICAL){
-                scrollBy(0, (int) (distanceY * elasticForce));
-                handleScrollCallback();
-                logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
-                if(getScrollY() >= 0){
-                    logD("滚动：垂直-手动回滚头部完毕");
-                    state = State.NORMAL;
-                }
-                scrollPullViewToHeader(pullView);
-                return true;
-            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
-                scrollBy((int) (distanceX * elasticForce), 0);
-                handleScrollCallback();
-                logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
-                if(getScrollX() >= 0){
-                    logD("滚动：横向-手动回滚头部完毕");
-                    state = State.NORMAL;
-                }
-                scrollPullViewToHeader(pullView);
-                return true;
-            }else{
-                return false;
-            }
-        }else if(state == State.PULL_FOOTER){
-            if(getPullOrientation() == PullOrientation.VERTICAL){
-                scrollBy(0, (int) (distanceY * elasticForce));
-                handleScrollCallback();
-                logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
-                if(getScrollY() <= 0){
-                    logD("滚动：垂直-手动回滚尾部完毕");
-                    state = State.NORMAL;
-                }
-                scrollPullViewToFooter(pullView);
-                return true;
-            }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
-                scrollBy((int) (distanceX * elasticForce), 0);
-                handleScrollCallback();
-                logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
-                if(getScrollX() <= 0){
-                    logD("滚动：横向-手动回滚尾部完毕");
-                    state = State.NORMAL;
-                }
-                scrollPullViewToFooter(pullView);
-                return true;
-            }else{
-                return false;
-            }
-        }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) < 0){
-            if(isCanPullHeader(pullView)){
-                logD("滚动：开始拉伸头部");
-                state = State.PULL_HEADER;
-                return true;
-            }else{
-                return false;
-            }
-        }else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) > 0){
-            if(isCanPullFooter(pullView)){
-                logD("滚动：开始拉伸尾部");
-                state = State.PULL_FOOTER;
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
-        }
+		if(showing && getScrollY() < 0 && distanceY > 0){
+    		logD("滚动：垂直-正在回滚头部，ScrollY=" + getScrollY());
+			scrollBy(0, (int) (distanceY));
+			scrollPullViewToHeader(pullView);
+    	}else{
+    		if(state == State.PULL_HEADER){
+    			if(getPullOrientation() == PullOrientation.VERTICAL){
+    				scrollBy(0, (int) (distanceY * elasticForce));
+    				if(getScrollY() >= 0){
+    					state = State.NORMAL;
+    					logD("滚动：垂直-手动回滚头部完毕");
+    				}else{
+    					logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
+    				}
+    			}else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+    				scrollBy((int) (distanceX * elasticForce), 0);
+    				if(getScrollX() >= 0){
+    					state = State.NORMAL;
+    					logD("滚动：横向-手动回滚头部完毕");
+    				}else{
+    					logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
+    				}
+    			}
+    			handleScrollCallback();
+    			scrollPullViewToHeader(pullView);
+    		}else if(state == State.PULL_FOOTER){
+    			if(getPullOrientation() == PullOrientation.VERTICAL){
+    				scrollBy(0, (int) (distanceY * elasticForce));
+    				if(getScrollY() <= 0){
+    					state = State.NORMAL;
+    					logD("滚动：垂直-手动回滚尾部完毕");
+    				}else{
+    					logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
+    				}
+    			}else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+    				scrollBy((int) (distanceX * elasticForce), 0);
+    				if(getScrollX() <= 0){
+    					state = State.NORMAL;
+    					logD("滚动：横向-手动回滚尾部完毕");
+    				}else{
+    					logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
+    				}
+    			}
+    			handleScrollCallback();
+    			scrollPullViewToFooter(pullView);
+    		}else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) < 0){
+    			if(isCanPullHeader(pullView)){
+    				logD("滚动：开始拉伸头部");
+    				state = State.PULL_HEADER;
+    			}
+    		}else if((getPullOrientation() == PullOrientation.VERTICAL?distanceY:distanceX) > 0){
+    			if(isCanPullFooter(pullView)){
+    				logD("滚动：开始拉伸尾部");
+    				state = State.PULL_FOOTER;
+    			}
+    		}
+    	}
+    	return true;
 	}
     
     /**
@@ -165,39 +156,39 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
      * @param eventActionName
      */
     private void handleUpTouchEvent(String eventActionName){
-        if(getPullOrientation() == PullOrientation.VERTICAL){
-            if(getScrollY() != 0){
-                if(state == State.PULL_HEADER){
-                    logD(eventActionName+"：垂直-回滚-头部");
-                    rollbackScroller.rollback();
-                }else if(state == State.PULL_FOOTER){
-                    logD(eventActionName+"：垂直-回滚-尾部");
-                    rollbackScroller.rollback();
-                }else{
-                    logD(eventActionName+"：垂直-回滚-没有目的");
-                    rollbackScroller.rollback();
-                }
-            }else{
-                logD(eventActionName+"：垂直-无需回滚");
-            }
-        }else if(getPullOrientation() == PullOrientation.LANDSCAPE){
-            if(getScrollX() != 0){
-                if(state == State.PULL_HEADER){
-                    logD(eventActionName+"：横向-回滚-头部");
-                    rollbackScroller.rollback();
-                }else if(state == State.PULL_FOOTER){
-                    logD(eventActionName+"：横向-回滚-尾部");
-                    rollbackScroller.rollback();
-                }else{
-                    logD(eventActionName+"：横向-回滚-没有目的");
-                    rollbackScroller.rollback();
-                }
-            }else{
-                logD(eventActionName+"：横向-无需回滚");
-            }
-        }else{
-            logD(eventActionName+"：未知的拉伸方向");
-        }
+    	if(getPullOrientation() == PullOrientation.VERTICAL){
+    		if(getScrollY() != 0){
+    			if(state == State.PULL_HEADER){
+    				logD(eventActionName+"：垂直-回滚-头部");
+    				rollbackScroller.rollback();
+    			}else if(state == State.PULL_FOOTER){
+    				logD(eventActionName+"：垂直-回滚-尾部");
+    				rollbackScroller.rollback();
+//                }else{
+//                    logD(eventActionName+"：垂直-回滚-没有目的");
+//                    rollbackScroller.rollback();
+    			}
+    		}else{
+    			logD(eventActionName+"：垂直-无需回滚");
+    		}
+    	}else if(getPullOrientation() == PullOrientation.LANDSCAPE){
+    		if(getScrollX() != 0){
+    			if(state == State.PULL_HEADER){
+    				logD(eventActionName+"：横向-回滚-头部");
+    				rollbackScroller.rollback();
+    			}else if(state == State.PULL_FOOTER){
+    				logD(eventActionName+"：横向-回滚-尾部");
+    				rollbackScroller.rollback();
+//                }else{
+//                    logD(eventActionName+"：横向-回滚-没有目的");
+//                    rollbackScroller.rollback();
+    			}
+    		}else{
+    			logD(eventActionName+"：横向-无需回滚");
+    		}
+    	}else{
+    		logD(eventActionName+"：未知的拉伸方向");
+    	}
     }
 
     @Override
@@ -215,8 +206,10 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
             if(pullHeader != null){
             	if(pullHeader.getStatus() == PullHeader.Status.READY){
             		pullHeader.onTrigger();
+            		showing = true;
             	}else if(pullHeader.getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
             		pullHeader.onComplete();
+            		showing = false;
             	}
             }
         }
@@ -331,13 +324,5 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 
 	public RolbackScroller getRollbackScroller() {
 		return rollbackScroller;
-	}
-
-	int getMinScrollValue() {
-		return minScrollValue;
-	}
-
-	void setMinScrollValue(int minScrollValue) {
-		this.minScrollValue = minScrollValue;
 	}
 }

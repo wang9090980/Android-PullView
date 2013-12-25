@@ -35,6 +35,13 @@ public class MainActivity extends ListActivity{
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullHorizontalScroll), PullHorizontalScrollActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullWeb), PullWebActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullViewPager), PullViewPagerActivity.class).create());
+        entrys.add(new ActivityEntry.Build("测试1", null).create());
+        entrys.add(new ActivityEntry.Build("测试2", null).create());
+        entrys.add(new ActivityEntry.Build("测试3", null).create());
+        entrys.add(new ActivityEntry.Build("测试4", null).create());
+        entrys.add(new ActivityEntry.Build("测试5", null).create());
+        entrys.add(new ActivityEntry.Build("测试6", null).create());
+        entrys.add(new ActivityEntry.Build("测试7", null).create());
 
         getListView().setAdapter(textAdapter = new TextAdapter(getBaseContext(), entrys));
 
@@ -64,7 +71,7 @@ public class MainActivity extends ListActivity{
 					public void run() {
 						pullToRefreshHeader.complete();
 					}
-				}, 5000);
+				}, 10000);
 			}
 		});
         pullListView.setPullHeader(pullToRefreshHeader);
