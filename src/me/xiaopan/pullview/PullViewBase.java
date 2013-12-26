@@ -21,6 +21,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	private PullHeader pullHeader;  //拉伸头
     private RolbackScroller rollbackScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
+    private boolean lanjie;
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -57,12 +58,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		super.dispatchTouchEvent(ev);
-        compositeGestureDetector.onTouchEvent(ev);
+		compositeGestureDetector.onTouchEvent(ev);
         switch(ev.getAction()){
 			case MotionEvent.ACTION_UP : rollbackScroller.rollback(); break;
 			case MotionEvent.ACTION_CANCEL : rollbackScroller.rollback(); break;
 		}
+        if(!lanjie){
+        	super.dispatchTouchEvent(ev);
+        }
 		return true;
 	}
     
@@ -71,78 +74,88 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
         if(rollbackScroller.isScrolling()){
             rollbackScroller.abortScroll();
         }
+        lanjie = false;
         return true;
     }
 
     @Override
 	public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		if(showing && getScrollY() < 0 && distanceY > 0){
-    		logD("滚动：垂直-正在回滚头部，ScrollY=" + getScrollY());
-			scrollBy(0, (int) (distanceY));
-			scrollPullViewToHeader(pullView);
-    	}else{
-    		switch(status){
-	    		case PULL_HEADER : 
-	    			if(isVerticalPull()){
-	    				scrollBy(0, (int) (distanceY * elasticForce));
-	    				if(getScrollY() >= 0){
-	    					status = Status.NORMAL;
-	    					logD("滚动：垂直-手动回滚头部完毕");
-	    				}else{
-	    					logD("滚动：垂直-正在拉伸头部，ScrollY=" + getScrollY());
-	    				}
-	    			}else{
-	    				scrollBy((int) (distanceX * elasticForce), 0);
-	    				if(getScrollX() >= 0){
-	    					status = Status.NORMAL;
-	    					logD("滚动：横向-手动回滚头部完毕");
-	    				}else{
-	    					logD("滚动：横向-正在拉伸头部，ScrollX=" + getScrollX());
-	    				}
-	    			}
-	    			handleScrollCallback();
-	    			scrollPullViewToHeader(pullView);
-	    			break;
-	    		case PULL_FOOTER : 
-	    			if(isVerticalPull()){
-	    				scrollBy(0, (int) (distanceY * elasticForce));
-	    				if(getScrollY() <= 0){
-	    					status = Status.NORMAL;
-	    					logD("滚动：垂直-手动回滚尾部完毕");
-	    				}else{
-	    					logD("滚动：垂直-正在拉伸尾部，ScrollY=" + getScrollY());
-	    				}
-	    			}else{
-	    				scrollBy((int) (distanceX * elasticForce), 0);
-	    				if(getScrollX() <= 0){
-	    					status = Status.NORMAL;
-	    					logD("滚动：横向-手动回滚尾部完毕");
-	    				}else{
-	    					logD("滚动：横向-正在拉伸尾部，ScrollX=" + getScrollX());
-	    				}
-	    			}
-	    			handleScrollCallback();
-	    			scrollPullViewToFooter(pullView);
-	    			break;
-	    		default : 
-	    			if((isVerticalPull()?distanceY:distanceX) < 0){
-	        			if(isCanPullHeader(pullView)){
-	        				logD("滚动：开始拉伸头部");
-	        				status = Status.PULL_HEADER;
+		switch(status){
+    		case PULL_HEADER : 
+    			if(isVerticalPull()){
+    				scrollBy(0, (int) (distanceY * elasticForce));
+    			}else{
+    				scrollBy((int) (distanceX * elasticForce), 0);
+    			}
+    			if((isVerticalPull()?getScrollY():getScrollX()) >= 0 && Math.abs(isVerticalPull()?distanceY:distanceX) <= 10){
+    				status = Status.NORMAL;
+    			}
+    			handleScrollCallback();
+    			scrollPullViewToHeader(pullView);
+    			break;
+    		case PULL_FOOTER : 
+    			if(isVerticalPull()){
+    				scrollBy(0, (int) (distanceY * elasticForce));
+    			}else{
+    				scrollBy((int) (distanceX * elasticForce), 0);
+    			}
+    			if((isVerticalPull()?getScrollY():getScrollX()) <= 0 && Math.abs(isVerticalPull()?distanceY:distanceX) <= 10){
+    				status = Status.NORMAL;
+    			}
+    			handleScrollCallback();
+    			scrollPullViewToFooter(pullView);
+    			break;
+    		default : 
+    			if(isVerticalPull()){
+	    			logD("ScrollY");
+    				if(distanceY < 0){	//如果向下拉
+	        			if(showing && getScrollY() > headerMinScrollValue){
+	        				scrollBy(0, (int) distanceY);
+	        				scrollPullViewToHeader(pullView);
+	        			}else if(isCanPullHeader(pullView)){
+        					logD("滚动：开始拉伸头部");
+        					status = Status.PULL_HEADER;
 	        			}
-	        		}else if((isVerticalPull()?distanceY:distanceX) > 0){
+	        		}else if(distanceY > 0){	//如果向上拉
+	        			if(showing && getScrollY() < 0){
+	        				logD("滚动：垂直-正在回滚头部，ScrollY=" + getScrollY());
+	        				scrollBy(0, (int) (distanceY));
+	        				scrollPullViewToHeader(pullView);
+	        			}else if(isCanPullFooter(pullView)){
+	        				logD("滚动：开始拉伸尾部");
+	        				status = Status.PULL_FOOTER;
+	        			}
+	        		}
+    			}else{
+    				if(distanceX< 0){	//如果向下拉
+	        			if(distanceX > headerMinScrollValue){
+	        				scrollBy((int) distanceX, 0);
+	        				scrollPullViewToHeader(pullView);
+	        			}else{
+	        				if(isCanPullHeader(pullView)){
+	        					logD("滚动：开始拉伸头部");
+	        					status = Status.PULL_HEADER;
+	        				}
+	        			}
+	        		}else if(distanceX > 0){	//如果向上拉
 	        			if(isCanPullFooter(pullView)){
 	        				logD("滚动：开始拉伸尾部");
 	        				status = Status.PULL_FOOTER;
 	        			}
 	        		}
-	    			break;
-    		}
-    	}
+    			}
+    			break;
+		}
     	return true;
 	}
     
-    /**
+    @Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    	lanjie = status != Status.NORMAL;
+		return true;
+	}
+
+	/**
      * 处理滚动回调
      */
     private void handleScrollCallback(){
