@@ -24,8 +24,8 @@ public class PullViewPager extends PullViewBase<ViewPager> {
 	}
 
 	@Override
-	protected PullOrientation getPullOrientation() {
-		return PullOrientation.LANDSCAPE;
+	protected boolean isVerticalPull() {
+		return false;
 	}
 
 	@Override

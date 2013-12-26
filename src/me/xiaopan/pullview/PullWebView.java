@@ -61,8 +61,8 @@ public class PullWebView extends PullViewBase<WebView> {
 	}
 
 	@Override
-	protected PullOrientation getPullOrientation() {
-		return PullOrientation.VERTICAL;
+	protected boolean isVerticalPull() {
+		return true;
 	}
 
 	@Override

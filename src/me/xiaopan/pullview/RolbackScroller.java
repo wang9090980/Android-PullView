@@ -1,6 +1,5 @@
 package me.xiaopan.pullview;
 
-import me.xiaopan.pullview.PullViewBase.PullOrientation;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
@@ -33,7 +32,7 @@ public class RolbackScroller {
         }
         abort = false;
         scrolling = true;
-        if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
+        if(pullViewBase.isVerticalPull()){
         	int currentScrollY = pullViewBase.getScrollY();
         	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1), duration);
         	pullViewBase.post(executeRunnable);
@@ -119,7 +118,7 @@ public class RolbackScroller {
         public void run() {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
-                if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
+                if(pullViewBase.isVerticalPull()){
                 	pullViewBase.scrollTo(pullViewBase.getScrollX(), scroller.getCurrY());
                 }else{
                 	pullViewBase.scrollTo(scroller.getCurrX(), pullViewBase.getScrollY());

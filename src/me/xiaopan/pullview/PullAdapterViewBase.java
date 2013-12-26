@@ -19,8 +19,8 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    protected PullOrientation getPullOrientation() {
-        return PullOrientation.VERTICAL;
+    protected boolean isVerticalPull() {
+        return true;
     }
 
     @Override

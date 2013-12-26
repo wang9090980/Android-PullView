@@ -61,8 +61,8 @@ public class PullHorizontalScrollView extends PullViewBase<HorizontalScrollView>
 	}
 
 	@Override
-	protected PullOrientation getPullOrientation() {
-		return PullOrientation.LANDSCAPE;
+	protected boolean isVerticalPull() {
+		return false;
 	}
 
     @Override

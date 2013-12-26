@@ -61,8 +61,8 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	protected PullOrientation getPullOrientation() {
-		return PullOrientation.VERTICAL;
+	protected boolean isVerticalPull() {
+		return true;
 	}
 
     @Override
