@@ -8,7 +8,6 @@ import android.widget.Scroller;
  * 回滚滚动器
  */
 public class RolbackScroller {
-	private int minScrollValue;	//最小滚动值
     private boolean abort;
     private boolean scrolling;
 	private PullViewBase<?> pullViewBase;
@@ -28,7 +27,7 @@ public class RolbackScroller {
      * 回滚
      * @param endLocation 结束位置
      */
-	public void startScroll(int endLocation){
+	public void rollback(int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
@@ -46,10 +45,36 @@ public class RolbackScroller {
     }
 
     /**
+     * 回滚头部
+     */
+    public void rollbackHeader(){
+    	rollback(pullViewBase.getHeaderMinScrollValue());
+    }
+
+    /**
+     * 回滚尾部
+     */
+    public void rollbackFooter(){
+    	rollback(pullViewBase.getFooterMinScrollVaule());
+    }
+
+    /**
      * 回滚
      */
     public void rollback(){
-    	startScroll(getMinScrollValue());
+    	switch(pullViewBase.getStatus()){
+    		case NORMAL : 
+    			pullViewBase.logD("无需回滚");
+    			break;
+	    	case PULL_HEADER : 
+	    		pullViewBase.logD("回滚-头部");
+	    		rollbackHeader();
+	    		break;
+	    	case PULL_FOOTER : 
+	    		pullViewBase.logD("回滚-尾部");
+	    		rollbackFooter();
+	    		break;
+    	}
     }
 
     /**
@@ -118,13 +143,5 @@ public class RolbackScroller {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
-	}
-
-	int getMinScrollValue() {
-		return minScrollValue;
-	}
-
-	void setMinScrollValue(int minScrollValue) {
-		this.minScrollValue = minScrollValue;
 	}
 }

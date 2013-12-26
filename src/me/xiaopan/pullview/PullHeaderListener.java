@@ -11,16 +11,16 @@ public class PullHeaderListener implements OnStatusChangeListener {
 	
 	@Override
 	public void onShow(PullHeader pullHeader) {
-		pullViewBase.getRollbackScroller().setMinScrollValue(-pullViewBase.getPullHeader().getHeight());
+		pullViewBase.setHeaderMinScrollValue(-pullViewBase.getPullHeader().getHeight());
 	}
 
 	@Override
 	public void onHide(PullHeader pullHeader) {
-		pullViewBase.getRollbackScroller().setMinScrollValue(0);
+		pullViewBase.setHeaderMinScrollValue(0);
 	}
 
 	@Override
 	public void onRollback(PullHeader pullHeader) {
-		pullViewBase.getRollbackScroller().rollback();
+		pullViewBase.getRollbackScroller().rollbackHeader();
 	}
 }
