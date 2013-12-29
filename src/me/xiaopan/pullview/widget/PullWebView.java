@@ -1,5 +1,6 @@
-package me.xiaopan.pullview;
+package me.xiaopan.pullview.widget;
 
+import me.xiaopan.pullview.PullViewBase;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;

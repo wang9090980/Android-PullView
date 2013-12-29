@@ -1,5 +1,6 @@
-package me.xiaopan.pullview;
+package me.xiaopan.pullview.widget;
 
+import me.xiaopan.pullview.PullViewBase;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;

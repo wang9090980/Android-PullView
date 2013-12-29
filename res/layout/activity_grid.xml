@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.xiaopan.pullview.PullGridView
+<me.xiaopan.pullview.widget.PullGridView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pullGrid_grid"
     style="@style/pullView"/>

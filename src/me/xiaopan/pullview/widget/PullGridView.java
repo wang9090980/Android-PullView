@@ -1,5 +1,6 @@
-package me.xiaopan.pullview;
+package me.xiaopan.pullview.widget;
 
+import me.xiaopan.pullview.PullAdapterViewBase;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;

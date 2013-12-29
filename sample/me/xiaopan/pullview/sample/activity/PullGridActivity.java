@@ -1,8 +1,8 @@
 package me.xiaopan.pullview.sample.activity;
 
-import me.xiaopan.pullview.PullGridView;
 import me.xiaopan.pullview.R;
 import me.xiaopan.pullview.sample.adapter.ImageAdapter;
+import me.xiaopan.pullview.widget.PullGridView;
 import android.app.Activity;
 import android.os.Bundle;
 

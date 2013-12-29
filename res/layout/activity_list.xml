@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<me.xiaopan.pullview.PullListView
+<me.xiaopan.pullview.widget.PullListView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pullList_list"
     style="@style/pullView"/>
