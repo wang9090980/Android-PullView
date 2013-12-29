@@ -84,11 +84,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     		case PULL_HEADER : 
     			if(isVerticalPull()){
     				scrollBy(0, (int) (distanceY * elasticForce));
+    				if(getScrollY() >= 0 && Math.abs(distanceY) <= 10){
+        				status = Status.NORMAL;
+        			}
     			}else{
     				scrollBy((int) (distanceX * elasticForce), 0);
-    			}
-    			if((isVerticalPull()?getScrollY():getScrollX()) >= 0 && Math.abs(isVerticalPull()?distanceY:distanceX) <= 10){
-    				status = Status.NORMAL;
+    				if(getScrollX() >= 0 && Math.abs(distanceX) <= 10){
+    					status = Status.NORMAL;
+    				}
     			}
     			handleScrollCallback();
     			scrollPullViewToHeader(pullView);
@@ -96,11 +99,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     		case PULL_FOOTER : 
     			if(isVerticalPull()){
     				scrollBy(0, (int) (distanceY * elasticForce));
+    				if(getScrollY() <= 0 && Math.abs(distanceY) <= 10){
+    					status = Status.NORMAL;
+    				}
     			}else{
     				scrollBy((int) (distanceX * elasticForce), 0);
-    			}
-    			if((isVerticalPull()?getScrollY():getScrollX()) <= 0 && Math.abs(isVerticalPull()?distanceY:distanceX) <= 10){
-    				status = Status.NORMAL;
+    				if(getScrollX() <= 0 && Math.abs(distanceX) <= 10){
+    					status = Status.NORMAL;
+    				}
     			}
     			handleScrollCallback();
     			scrollPullViewToFooter(pullView);
