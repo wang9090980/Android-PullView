@@ -1,6 +1,5 @@
 package me.xiaopan.pullview;
 
-import me.xiaopan.pullview.PullViewBase.PullOrientation;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Scroller;
 
@@ -27,13 +26,13 @@ public class RolbackScroller {
      * 回滚
      * @param endLocation 结束位置
      */
-    private void startScroll(int endLocation){
+	public void rollback(int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
         abort = false;
         scrolling = true;
-        if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
+        if(pullViewBase.isVerticalPull()){
         	int currentScrollY = pullViewBase.getScrollY();
         	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1), duration);
         	pullViewBase.post(executeRunnable);
@@ -45,22 +44,36 @@ public class RolbackScroller {
     }
 
     /**
+     * 回滚头部
+     */
+    public void rollbackHeader(){
+    	rollback(pullViewBase.getHeaderMinScrollValue());
+    }
+
+    /**
+     * 回滚尾部
+     */
+    public void rollbackFooter(){
+    	rollback(pullViewBase.getFooterMinScrollVaule());
+    }
+
+    /**
      * 回滚
      */
     public void rollback(){
-        if(pullViewBase.getPullHeader() != null){
-        	if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.READY){
-        		startScroll(-pullViewBase.getPullHeader().getHeight());
-        	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER){
-        		startScroll(-pullViewBase.getPullHeader().getHeight());
-        	}else if(pullViewBase.getPullHeader().getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
-        		startScroll(0);
-        	}else{
-        		startScroll(0);
-        	}
-        }else{
-        	startScroll(0);
-        }
+    	switch(pullViewBase.getStatus()){
+    		case NORMAL : 
+    			pullViewBase.logD("无需回滚");
+    			break;
+	    	case PULL_HEADER : 
+	    		pullViewBase.logD("回滚-头部");
+	    		rollbackHeader();
+	    		break;
+	    	case PULL_FOOTER : 
+	    		pullViewBase.logD("回滚-尾部");
+	    		rollbackFooter();
+	    		break;
+    	}
     }
 
     /**
@@ -105,7 +118,7 @@ public class RolbackScroller {
         public void run() {
             if(scroller.computeScrollOffset()){
                 scrolling = true;
-                if(pullViewBase.getPullOrientation() == PullOrientation.VERTICAL){
+                if(pullViewBase.isVerticalPull()){
                 	pullViewBase.scrollTo(pullViewBase.getScrollX(), scroller.getCurrY());
                 }else{
                 	pullViewBase.scrollTo(scroller.getCurrX(), pullViewBase.getScrollY());

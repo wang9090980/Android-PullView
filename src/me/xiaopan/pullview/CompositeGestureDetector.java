@@ -47,7 +47,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return true;
+        return onTouchListener.onFling(e1, e2, velocityX, velocityY);
     }
 
     /**
@@ -70,5 +70,7 @@ public class CompositeGestureDetector implements GestureDetector.OnGestureListen
          * @return
          */
         public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
+        
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
     }
 }

@@ -24,12 +24,14 @@ public abstract class PullHeader extends LinearLayout{
     		case NORMAL:
     			if(distance >= getHeight()){
     				status = Status.READY;
+    				onStatusChangeListener.onShow(this);
     				onStatusChange(status);
     			}
     			break;
     		case READY :
     			if(distance < getHeight()){
 					status = Status.NORMAL;
+					onStatusChangeListener.onHide(this);
     				onStatusChange(status);
     			}
     			break;
@@ -61,7 +63,8 @@ public abstract class PullHeader extends LinearLayout{
      */
     public void complete(){
     	status = Status.TRIGGER_TO_NORMAL;
-		onStatusChangeListener.onComplete();
+		onStatusChangeListener.onHide(this);
+		onStatusChangeListener.onRollback(this);
     	onStatusChange(status);
     }
     
@@ -93,7 +96,9 @@ public abstract class PullHeader extends LinearLayout{
     }
     
     public interface OnStatusChangeListener{
-    	public void onComplete();
+    	public void onShow(PullHeader pullHeader);
+    	public void onHide(PullHeader pullHeader);
+    	public void onRollback(PullHeader pullHeader);
     }
 
 	public Status getStatus() {
