@@ -46,10 +46,8 @@ public class RollbackEventHandleListener implements OnRollbackScrollListener {
             if(pullViewBase.getPullHeaderView() != null){
             	if(pullViewBase.getPullHeaderView().getStatus() == PullHeaderView.Status.READY){
             		pullViewBase.getPullHeaderView().onTrigger();
-            		pullViewBase.setShowing(true);
             	}else if(pullViewBase.getPullHeaderView().getStatus() == PullHeaderView.Status.TRIGGER_TO_NORMAL){
             		pullViewBase.getPullHeaderView().onComplete();
-            		pullViewBase.setShowing(false);
             	}
             }
         }

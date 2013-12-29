@@ -18,7 +18,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private int headerMinScrollValue;	//头部最小滚动值
 	private int footerMinScrollVaule;	//尾部最小滚动值
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
-	private boolean showing;	//是否有头或者尾正在显示
 	private boolean intercept;	//是否拦截事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
@@ -184,14 +183,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	 */
 	public void setElasticForce(float elasticForce) {
 		this.elasticForce = elasticForce;
-	}
-
-	boolean isShowing() {
-		return showing;
-	}
-
-	void setShowing(boolean showing) {
-		this.showing = showing;
 	}
 
 	boolean isIntercept() {
