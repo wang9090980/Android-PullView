@@ -35,13 +35,22 @@ public class MainActivity extends ListActivity{
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullHorizontalScroll), PullHorizontalScrollActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullWeb), PullWebActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullViewPager), PullViewPagerActivity.class).create());
-        entrys.add(new ActivityEntry.Build("测试1", null).create());
-        entrys.add(new ActivityEntry.Build("测试2", null).create());
-        entrys.add(new ActivityEntry.Build("测试3", null).create());
-        entrys.add(new ActivityEntry.Build("测试4", null).create());
-        entrys.add(new ActivityEntry.Build("测试5", null).create());
-        entrys.add(new ActivityEntry.Build("测试6", null).create());
-        entrys.add(new ActivityEntry.Build("测试7", null).create());
+        entrys.add(new ActivityEntry.Build("Button", null).create());
+        entrys.add(new ActivityEntry.Build("CalendarView", null).create());
+        entrys.add(new ActivityEntry.Build("CheckBox", null).create());
+        entrys.add(new ActivityEntry.Build("EditText", null).create());
+        entrys.add(new ActivityEntry.Build("Gallery", null).create());
+        entrys.add(new ActivityEntry.Build("ImageView", null).create());
+        entrys.add(new ActivityEntry.Build("ProgressBar", null).create());
+        entrys.add(new ActivityEntry.Build("RatingBar", null).create());
+        entrys.add(new ActivityEntry.Build("RadioButton", null).create());
+        entrys.add(new ActivityEntry.Build("Spinner", null).create());
+        entrys.add(new ActivityEntry.Build("SurfaceView", null).create());
+        entrys.add(new ActivityEntry.Build("SeekBar", null).create());
+        entrys.add(new ActivityEntry.Build("TabHost", null).create());
+        entrys.add(new ActivityEntry.Build("TextView", null).create());
+        entrys.add(new ActivityEntry.Build("TimePicker", null).create());
+        entrys.add(new ActivityEntry.Build("ToggleButton", null).create());
 
         getListView().setAdapter(textAdapter = new TextAdapter(getBaseContext(), entrys));
 
