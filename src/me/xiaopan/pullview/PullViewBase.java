@@ -10,18 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public abstract class PullViewBase<T extends View> extends LinearLayout implements CompositeGestureDetector.OnTouchListener, RolbackScroller.OnRollbackScrollListener{
+/**
+ * 拉伸视图基类
+ * @param <T>
+ */
+public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private int headerMinScrollValue;	//头部最小滚动值
 	private int footerMinScrollVaule;	//尾部最小滚动值
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
-	private boolean showing;
+	private boolean showing;	//是否有头或者尾正在显示
+	private boolean intercept;	//是否拦截事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
 	private Status status = Status.NORMAL;    //状态标识
-	private PullHeader pullHeader;  //拉伸头
+	private PullHeaderView pullHeaderView;  //拉伸头
     private RolbackScroller rollbackScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
-    private boolean lanjie;
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -39,8 +43,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	private void init(){
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
-        rollbackScroller = new RolbackScroller(this, this);
-        compositeGestureDetector = new CompositeGestureDetector(getContext(), this);
+        rollbackScroller = new RolbackScroller(this, new RollbackEventHandleListener(this));
+        compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
 		pullView = createPullView();
         addViewToSelf = true;
 		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -63,112 +67,20 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 			case MotionEvent.ACTION_UP : rollbackScroller.rollback(); break;
 			case MotionEvent.ACTION_CANCEL : rollbackScroller.rollback(); break;
 		}
-        if(!lanjie){
+        if(!intercept){
         	super.dispatchTouchEvent(ev);
         }
-		return true;
-	}
-    
-    @Override
-    public boolean onTouchDown(MotionEvent e) {
-        if(rollbackScroller.isScrolling()){
-            rollbackScroller.abortScroll();
-        }
-        lanjie = false;
-        return true;
-    }
-
-    @Override
-	public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		switch(status){
-    		case PULL_HEADER : 
-    			if(isVerticalPull()){
-    				scrollBy(0, (int) (distanceY * elasticForce));
-    				if(getScrollY() >= 0 && Math.abs(distanceY) <= 10){
-        				status = Status.NORMAL;
-        			}
-    			}else{
-    				scrollBy((int) (distanceX * elasticForce), 0);
-    				if(getScrollX() >= 0 && Math.abs(distanceX) <= 10){
-    					status = Status.NORMAL;
-    				}
-    			}
-    			handleScrollCallback();
-    			scrollPullViewToHeader(pullView);
-    			break;
-    		case PULL_FOOTER : 
-    			if(isVerticalPull()){
-    				scrollBy(0, (int) (distanceY * elasticForce));
-    				if(getScrollY() <= 0 && Math.abs(distanceY) <= 10){
-    					status = Status.NORMAL;
-    				}
-    			}else{
-    				scrollBy((int) (distanceX * elasticForce), 0);
-    				if(getScrollX() <= 0 && Math.abs(distanceX) <= 10){
-    					status = Status.NORMAL;
-    				}
-    			}
-    			handleScrollCallback();
-    			scrollPullViewToFooter(pullView);
-    			break;
-    		default : 
-    			if(isVerticalPull()){
-	    			logD("ScrollY");
-    				if(distanceY < 0){	//如果向下拉
-	        			if(showing && getScrollY() > headerMinScrollValue){
-	        				scrollBy(0, (int) distanceY);
-	        				scrollPullViewToHeader(pullView);
-	        			}else if(isCanPullHeader(pullView)){
-        					logD("滚动：开始拉伸头部");
-        					status = Status.PULL_HEADER;
-	        			}
-	        		}else if(distanceY > 0){	//如果向上拉
-	        			if(showing && getScrollY() < 0){
-	        				logD("滚动：垂直-正在回滚头部，ScrollY=" + getScrollY());
-	        				scrollBy(0, (int) (distanceY));
-	        				scrollPullViewToHeader(pullView);
-	        			}else if(isCanPullFooter(pullView)){
-	        				logD("滚动：开始拉伸尾部");
-	        				status = Status.PULL_FOOTER;
-	        			}
-	        		}
-    			}else{
-    				if(distanceX< 0){	//如果向下拉
-	        			if(distanceX > headerMinScrollValue){
-	        				scrollBy((int) distanceX, 0);
-	        				scrollPullViewToHeader(pullView);
-	        			}else{
-	        				if(isCanPullHeader(pullView)){
-	        					logD("滚动：开始拉伸头部");
-	        					status = Status.PULL_HEADER;
-	        				}
-	        			}
-	        		}else if(distanceX > 0){	//如果向上拉
-	        			if(isCanPullFooter(pullView)){
-	        				logD("滚动：开始拉伸尾部");
-	        				status = Status.PULL_FOOTER;
-	        			}
-	        		}
-    			}
-    			break;
-		}
-    	return true;
-	}
-    
-    @Override
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-    	lanjie = status != Status.NORMAL;
 		return true;
 	}
 
 	/**
      * 处理滚动回调
      */
-    private void handleScrollCallback(){
+    void handleScrollCallback(){
     	switch(status){
     		case PULL_HEADER :
-    			if(pullHeader != null){
-    	        	pullHeader.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
+    			if(pullHeaderView != null){
+    	        	pullHeaderView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
     	        }
     			break;
     		case PULL_FOOTER : 
@@ -178,53 +90,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
     	}
     }
 
-    @Override
-    public void onRollbackScroll() {
-        handleScrollCallback();
-    }
-
-    @Override
-    public void onRollbackComplete(boolean isForceAbort) {
-        if(isForceAbort){
-            logD("回滚：中断");
-        }else{
-            logD("回滚：已完成");
-            status = Status.NORMAL;
-            if(pullHeader != null){
-            	if(pullHeader.getStatus() == PullHeader.Status.READY){
-            		pullHeader.onTrigger();
-            		showing = true;
-            	}else if(pullHeader.getStatus() == PullHeader.Status.TRIGGER_TO_NORMAL){
-            		pullHeader.onComplete();
-            		showing = false;
-            	}
-            }
-        }
-    }
-
-	public T getPullView(){
-		return pullView;
-	}
-
 	/**
 	 * 创建内容视图
 	 * @return 内容视图
 	 */
-	public abstract T createPullView();
-
-    /**
-     * 设置拉伸头
-     * @param pullHeader
-     */
-    public void setPullHeader(PullHeader pullHeader) {
-        this.pullHeader = pullHeader;
-        pullHeader.setOnStatusChangeListener(new PullHeaderListener(this));
-        addViewToSelf = true;
-        addView(pullHeader, 0);
-        addViewToSelf = false;
-        ViewUtils.measure(pullHeader);
-        setPadding(getPaddingLeft(), -pullHeader.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
-    }
+    protected abstract T createPullView();
 
     /**
      * 是否是垂直拉伸
@@ -237,14 +107,14 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
      * @param pullView 拉伸视图
 	 * @return 是否可以拉头部
 	 */
-	public abstract boolean isCanPullHeader(T pullView);
+    protected abstract boolean isCanPullHeader(T pullView);
 	
 	/**
 	 * 是否可以拉尾部
      * @param pullView 拉伸视图
 	 * @return 是否可以拉尾部
 	 */
-	public abstract boolean isCanPullFooter(T pullView);
+    protected abstract boolean isCanPullFooter(T pullView);
 	
 	/**
 	 * 滚动拉伸视图到头部
@@ -258,15 +128,97 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 	 */
 	protected abstract void scrollPullViewToFooter(T pullView);
 
-	public void logI(String msg){
+	/**
+	 * 获取拉伸视图
+	 * @return
+	 */
+	public T getPullView(){
+		return pullView;
+	}
+
+	PullHeaderView getPullHeaderView() {
+		return pullHeaderView;
+	}
+
+    /**
+     * 设置拉伸头视图
+     * @param pullHeaderView
+     */
+    public void setPullHeaderView(PullHeaderView pullHeaderView) {
+        this.pullHeaderView = pullHeaderView;
+        pullHeaderView.setControllCallback(new PullHeaderViewControllCallback(this));
+        addViewToSelf = true;
+        addView(pullHeaderView, 0);
+        addViewToSelf = false;
+        ViewUtils.measure(pullHeaderView);
+        setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
+    }
+
+	RolbackScroller getRollbackScroller() {
+		return rollbackScroller;
+	}
+
+	int getHeaderMinScrollValue() {
+		return headerMinScrollValue;
+	}
+
+	void setHeaderMinScrollValue(int headerMinScrollValue) {
+		this.headerMinScrollValue = headerMinScrollValue;
+	}
+
+	int getFooterMinScrollVaule() {
+		return footerMinScrollVaule;
+	}
+
+	void setFooterMinScrollVaule(int footerMinScrollVaule) {
+		this.footerMinScrollVaule = footerMinScrollVaule;
+	}
+
+	float getElasticForce() {
+		return elasticForce;
+	}
+
+	/**
+	 * 设置弹力强度
+	 * @param elasticForce
+	 */
+	public void setElasticForce(float elasticForce) {
+		this.elasticForce = elasticForce;
+	}
+
+	boolean isShowing() {
+		return showing;
+	}
+
+	void setShowing(boolean showing) {
+		this.showing = showing;
+	}
+
+	boolean isIntercept() {
+		return intercept;
+	}
+
+	void setIntercept(boolean intercept) {
+		this.intercept = intercept;
+	}
+
+	Status getStatus() {
+		return status;
+	}
+
+	void setStatus(Status status) {
+		this.status = status;
+	}
+	
+	void logI(String msg){
 		Log.i(PullViewBase.class.getSimpleName(), msg);
 	}
 	
-	public void logD(String msg){
+	void logD(String msg){
 		Log.d(PullViewBase.class.getSimpleName(), msg);
 	}
 	
-	public void logE(String msg){
+	void logE(String msg){
 		Log.e(PullViewBase.class.getSimpleName(), msg);
 	}
 	
@@ -288,33 +240,5 @@ public abstract class PullViewBase<T extends View> extends LinearLayout implemen
 		 * 拉伸尾部
 		 */
 		PULL_FOOTER, 
-	}
-
-	public PullHeader getPullHeader() {
-		return pullHeader;
-	}
-
-	public RolbackScroller getRollbackScroller() {
-		return rollbackScroller;
-	}
-
-	public int getHeaderMinScrollValue() {
-		return headerMinScrollValue;
-	}
-
-	void setHeaderMinScrollValue(int headerMinScrollValue) {
-		this.headerMinScrollValue = headerMinScrollValue;
-	}
-
-	public int getFooterMinScrollVaule() {
-		return footerMinScrollVaule;
-	}
-
-	void setFooterMinScrollVaule(int footerMinScrollVaule) {
-		this.footerMinScrollVaule = footerMinScrollVaule;
-	}
-
-	public Status getStatus() {
-		return status;
 	}
 }

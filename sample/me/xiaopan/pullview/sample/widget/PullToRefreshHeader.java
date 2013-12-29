@@ -1,6 +1,6 @@
 package me.xiaopan.pullview.sample.widget;
 
-import me.xiaopan.pullview.PullHeader;
+import me.xiaopan.pullview.PullHeaderView;
 import me.xiaopan.pullview.R;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,7 +18,7 @@ import android.widget.TextView;
 /**
  * 下拉刷新头
  */
-public class PullToRefreshHeader extends PullHeader{
+public class PullToRefreshHeader extends PullHeaderView{
 	private int maxDegress = 180;
 	private float px, py;
 	private Matrix matrix;

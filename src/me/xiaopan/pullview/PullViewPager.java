@@ -19,7 +19,7 @@ public class PullViewPager extends PullViewBase<ViewPager> {
 	}
 
 	@Override
-	public ViewPager createPullView() {
+	protected ViewPager createPullView() {
 		return new ViewPager(getContext());
 	}
 
@@ -29,12 +29,12 @@ public class PullViewPager extends PullViewBase<ViewPager> {
 	}
 
 	@Override
-	public boolean isCanPullHeader(ViewPager pullView) {
+	protected boolean isCanPullHeader(ViewPager pullView) {
 		return pullView.getAdapter() != null?pullView.getCurrentItem() == 0:false;
 	}
 
 	@Override
-	public boolean isCanPullFooter(ViewPager pullView) {
+	protected boolean isCanPullFooter(ViewPager pullView) {
 		PagerAdapter adapter = pullView.getAdapter();
 		return adapter != null?pullView.getCurrentItem() == adapter.getCount() - 1:false;
 	}

@@ -20,7 +20,7 @@ public class PullHorizontalScrollView extends PullViewBase<HorizontalScrollView>
 	}
 
 	@Override
-	public HorizontalScrollView createPullView() {
+	protected HorizontalScrollView createPullView() {
 		HorizontalScrollView horizontalScrollView = new HorizontalScrollView(getContext());
 		horizontalScrollView.setBackgroundColor(Color.WHITE);
 		return horizontalScrollView;

@@ -20,7 +20,7 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	public ScrollView createPullView() {
+	protected ScrollView createPullView() {
 		ScrollView scrollView = new ScrollView(getContext());
 		scrollView.setBackgroundColor(Color.WHITE);
 		return scrollView;

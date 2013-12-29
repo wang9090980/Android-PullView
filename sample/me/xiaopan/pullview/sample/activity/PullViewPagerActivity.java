@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.pullview.PullViewPager;
-import me.xiaopan.pullview.sample.adapter.ViewPagerAdapter;
 import me.xiaopan.pullview.R;
+import me.xiaopan.pullview.sample.adapter.ViewPagerAdapter;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;

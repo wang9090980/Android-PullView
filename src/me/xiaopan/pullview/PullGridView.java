@@ -18,7 +18,7 @@ public class PullGridView extends PullAdapterViewBase<GridView> {
     }
 
     @Override
-    public GridView createPullView() {
+    protected GridView createPullView() {
         GridView gridView = new GridView(getContext());
         gridView.setCacheColorHint(Color.TRANSPARENT);
         gridView.setBackgroundColor(Color.WHITE);

@@ -5,33 +5,33 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 /**
- * Created by XIAOPAN on 13-12-21.
+ * 拉伸头视图
  */
-public abstract class PullHeader extends LinearLayout{
+public abstract class PullHeaderView extends LinearLayout{
     private Status status = Status.NORMAL;
-    private OnStatusChangeListener onStatusChangeListener;
+    private ControllCallback controllCallback;
     
-	public PullHeader(Context context) {
+	public PullHeaderView(Context context) {
         super(context);
     }
 
-    public PullHeader(Context context, AttributeSet attrs) {
+    public PullHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public void onScroll(int distance){
+    protected void onScroll(int distance){
     	switch(status){
     		case NORMAL:
     			if(distance >= getHeight()){
     				status = Status.READY;
-    				onStatusChangeListener.onShow(this);
+    				controllCallback.onShow();
     				onStatusChange(status);
     			}
     			break;
     		case READY :
     			if(distance < getHeight()){
 					status = Status.NORMAL;
-					onStatusChangeListener.onHide(this);
+					controllCallback.onHide();
     				onStatusChange(status);
     			}
     			break;
@@ -45,7 +45,7 @@ public abstract class PullHeader extends LinearLayout{
     /**
      * 当触发
      */
-    public void onTrigger(){
+    void onTrigger(){
     	status = Status.TRIGGER;
 		onStatusChange(status);
     }
@@ -53,7 +53,7 @@ public abstract class PullHeader extends LinearLayout{
     /**
      * 当完成
      */
-    public void onComplete(){
+    void onComplete(){
     	status = Status.NORMAL;
 		onStatusChange(status);
     }
@@ -63,12 +63,44 @@ public abstract class PullHeader extends LinearLayout{
      */
     public void complete(){
     	status = Status.TRIGGER_TO_NORMAL;
-		onStatusChangeListener.onHide(this);
-		onStatusChangeListener.onRollback(this);
+		controllCallback.onHide();
+		controllCallback.onRollback();
     	onStatusChange(status);
     }
     
     protected abstract void onStatusChange(Status newStatus);
+
+	/**
+	 * 获取状态
+	 * @return
+	 */
+	public Status getStatus() {
+		return status;
+	}
+
+	void setControllCallback(ControllCallback controllCallback) {
+		this.controllCallback = controllCallback;
+	}
+    
+    /**
+     * 控制回调
+     */
+    public interface ControllCallback{
+    	/**
+    	 * 显示
+    	 */
+    	public void onShow();
+    	
+    	/**
+    	 * 隐藏
+    	 */
+    	public void onHide();
+    	
+    	/**
+    	 * 回滚
+    	 */
+    	public void onRollback();
+    }
     
     /**
      * 状态
@@ -94,27 +126,4 @@ public abstract class PullHeader extends LinearLayout{
     	 */
     	TRIGGER_TO_NORMAL,
     }
-    
-    public interface OnStatusChangeListener{
-    	public void onShow(PullHeader pullHeader);
-    	public void onHide(PullHeader pullHeader);
-    	public void onRollback(PullHeader pullHeader);
-    }
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-
-	public OnStatusChangeListener getOnStatusChangeListener() {
-		return onStatusChangeListener;
-	}
-
-	public void setOnStatusChangeListener(
-			OnStatusChangeListener onStatusChangeListener) {
-		this.onStatusChangeListener = onStatusChangeListener;
-	}
 }

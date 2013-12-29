@@ -83,6 +83,6 @@ public class MainActivity extends ListActivity{
 				}, 10000);
 			}
 		});
-        pullListView.setPullHeader(pullToRefreshHeader);
+        pullListView.setPullHeaderView(pullToRefreshHeader);
     }
 }

@@ -20,24 +20,14 @@ public class PullWebView extends PullViewBase<WebView> {
 	}
 
 	@Override
-	public WebView createPullView() {
+	protected WebView createPullView() {
 		return new WebView(getContext());
 	}
-
-//	@Override
-//	public View createHeaderView() {
-//		return null;
-//	}
-//
-//	@Override
-//	public View createFooterView() {
-//		return null;
-//	}
 
 	@SuppressLint("FloatMath")
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isCanPullHeader(WebView pullView) {
+	protected boolean isCanPullHeader(WebView pullView) {
 		float contentHeight = FloatMath.floor(pullView.getContentHeight() * pullView.getScale());   //内容高度
         int viewHeight = pullView.getHeight();  //视图高度
         if(contentHeight > viewHeight){
@@ -50,7 +40,7 @@ public class PullWebView extends PullViewBase<WebView> {
 	@SuppressLint("FloatMath")
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isCanPullFooter(WebView pullView) {
+	protected boolean isCanPullFooter(WebView pullView) {
         float contentHeight = FloatMath.floor(pullView.getContentHeight() * pullView.getScale());   //内容高度
         int viewHeight = pullView.getHeight();  //视图高度
         if(contentHeight > viewHeight){

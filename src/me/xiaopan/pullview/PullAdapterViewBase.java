@@ -24,7 +24,7 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    public boolean isCanPullHeader(AbsListView pullView) {
+    protected boolean isCanPullHeader(AbsListView pullView) {
         boolean result = false;
         final Adapter adapter = pullView.getAdapter();
         if (null != adapter && !adapter.isEmpty() && pullView.getFirstVisiblePosition() <= 1) {
@@ -37,7 +37,7 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    public boolean isCanPullFooter(AbsListView pullView) {
+    protected boolean isCanPullFooter(AbsListView pullView) {
         boolean result = false;
         final Adapter adapter = pullView.getAdapter();
         if (null != adapter && !adapter.isEmpty()) {
