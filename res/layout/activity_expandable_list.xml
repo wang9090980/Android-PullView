@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<me.xiaopan.pullview.sample.sample.PullExpandableListView
+<me.xiaopan.pullview.PullExpandableListView
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/pullView"/>

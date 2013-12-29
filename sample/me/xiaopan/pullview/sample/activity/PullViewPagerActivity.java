@@ -21,12 +21,12 @@ public class PullViewPagerActivity extends Activity {
 		PullViewPager pullViewPager = (PullViewPager) findViewById(R.id.pullViewPager_viewPager);
 		
 		List<View> viewList = new ArrayList<View>();
-		viewList.add(create(R.drawable.images_1));
-		viewList.add(create(R.drawable.images_2));
-		viewList.add(create(R.drawable.images_3));
-		viewList.add(create(R.drawable.images_4));
-		viewList.add(create(R.drawable.images_5));
-		viewList.add(create(R.drawable.images_6));
+		viewList.add(create(R.drawable.image_1));
+		viewList.add(create(R.drawable.image_2));
+		viewList.add(create(R.drawable.image_3));
+		viewList.add(create(R.drawable.image_4));
+		viewList.add(create(R.drawable.image_5));
+		viewList.add(create(R.drawable.image_6));
 		pullViewPager.getPullView().setAdapter(new ViewPagerAdapter(viewList));
 	}
 	
