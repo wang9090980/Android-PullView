@@ -1,4 +1,4 @@
-<me.xiaopan.pullview.PullWebView 
+<me.xiaopan.pullview.sample.sample.PullWebView 
     xmlns:android="http://schemas.android.com/apk/res/android" 
     android:id="@+id/pullWeb_web"
     style="@style/pullView"/>

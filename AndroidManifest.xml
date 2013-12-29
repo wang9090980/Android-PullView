@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.xiaopan.pullview.example"
+    package="me.xiaopan.pullview"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,22 +13,22 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:name="me.xiaopan.pullview.MyApplication">
+        android:name="me.xiaopan.pullview.sample.sample.MyApplication">
         <activity
-            android:name="me.xiaopan.pullview.activity.MainActivity"
+            android:name="me.xiaopan.pullview.sample.activity.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="me.xiaopan.pullview.activity.PullScrollActivity" android:label="@string/activty_pullScroll"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullWebActivity" android:label="@string/activty_pullWeb"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullListActivity" android:label="@string/activty_pullList"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullGridActivity" android:label="@string/activty_pullGrid"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullExpandableListActivity" android:label="@string/activty_pullExpandableList"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullHorizontalScrollActivity" android:label="@string/activty_pullHorizontalScroll"/>
-        <activity android:name="me.xiaopan.pullview.activity.PullViewPagerActivity" android:label="@string/activty_pullViewPager"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullScrollActivity" android:label="@string/activty_pullScroll"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullWebActivity" android:label="@string/activty_pullWeb"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullListActivity" android:label="@string/activty_pullList"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullGridActivity" android:label="@string/activty_pullGrid"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullExpandableListActivity" android:label="@string/activty_pullExpandableList"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullHorizontalScrollActivity" android:label="@string/activty_pullHorizontalScroll"/>
+        <activity android:name="me.xiaopan.pullview.sample.activity.PullViewPagerActivity" android:label="@string/activty_pullViewPager"/>
     </application>
 
 </manifest>

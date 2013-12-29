@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package me.xiaopan.pullview.adapter;
+package me.xiaopan.pullview.sample.adapter;
 
 import java.util.List;
 
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

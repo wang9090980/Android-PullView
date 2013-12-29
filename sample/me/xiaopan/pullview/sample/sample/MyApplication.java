@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package me.xiaopan.pullview;
+package me.xiaopan.pullview.sample.sample;
 
 import me.xiaoapn.easy.imageloader.AlphaScaleShowAnimationListener;
 import me.xiaoapn.easy.imageloader.ImageLoader;
 import me.xiaoapn.easy.imageloader.Options;
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.R;
 import android.app.Application;
 
 public class MyApplication extends Application {

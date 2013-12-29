@@ -1,7 +1,7 @@
-package me.xiaopan.pullview.widget;
+package me.xiaopan.pullview.sample.widget;
 
 import me.xiaopan.pullview.PullHeader;
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;

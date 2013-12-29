@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package me.xiaopan.pullview.domain;
+package me.xiaopan.pullview.sample.domain;
 
-import me.xiaopan.pullview.adapter.TextAdapter;
+import me.xiaopan.pullview.sample.adapter.TextAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

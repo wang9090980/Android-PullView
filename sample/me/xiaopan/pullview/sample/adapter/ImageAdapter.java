@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package me.xiaopan.pullview.adapter;
+package me.xiaopan.pullview.sample.adapter;
 
 import me.xiaoapn.easy.imageloader.ImageLoader;
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

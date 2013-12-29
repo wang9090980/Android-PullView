@@ -1,6 +1,6 @@
-package me.xiaopan.pullview.activity;
+package me.xiaopan.pullview.sample.activity;
 
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.R;
 import android.app.Activity;
 import android.os.Bundle;
 

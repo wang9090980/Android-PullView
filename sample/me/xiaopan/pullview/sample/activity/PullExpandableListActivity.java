@@ -1,12 +1,12 @@
-package me.xiaopan.pullview.activity;
+package me.xiaopan.pullview.sample.activity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.pullview.adapter.GroupAadpter;
-import me.xiaopan.pullview.adapter.TextAdapter;
-import me.xiaopan.pullview.domain.ActivityEntry;
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.sample.adapter.GroupAadpter;
+import me.xiaopan.pullview.sample.adapter.TextAdapter;
+import me.xiaopan.pullview.sample.domain.ActivityEntry;
+import me.xiaopan.pullview.R;
 import android.app.ExpandableListActivity;
 import android.os.Bundle;
 

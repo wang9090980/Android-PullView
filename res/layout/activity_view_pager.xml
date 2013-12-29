@@ -1,4 +1,4 @@
-<me.xiaopan.pullview.PullViewPager
+<me.xiaopan.pullview.sample.sample.PullViewPager
     xmlns:android="http://schemas.android.com/apk/res/android" 
     android:id="@+id/pullViewPager_viewPager"
     style="@style/pullView"/>

@@ -1,11 +1,11 @@
-package me.xiaopan.pullview.activity;
+package me.xiaopan.pullview.sample.activity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.xiaopan.pullview.PullViewPager;
-import me.xiaopan.pullview.adapter.ViewPagerAdapter;
-import me.xiaopan.pullview.example.R;
+import me.xiaopan.pullview.sample.adapter.ViewPagerAdapter;
+import me.xiaopan.pullview.R;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
