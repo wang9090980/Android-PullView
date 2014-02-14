@@ -44,9 +44,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         setGravity(Gravity.CENTER);
         rollbackScroller = new RolbackScroller(this, new RollbackEventHandleListener(this));
         compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
-		pullView = createPullView();
         addViewToSelf = true;
-		addView(pullView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+		addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
 	}
 
@@ -56,6 +55,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
             super.addView(child, index, params);
         }else if(pullView instanceof ViewGroup){
             ((ViewGroup) pullView).addView(child, index, params);
+        }else{
+        	super.addView(child, index, params);
         }
 	}
 	
