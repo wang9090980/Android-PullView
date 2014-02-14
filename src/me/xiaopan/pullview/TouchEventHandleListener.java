@@ -17,7 +17,7 @@
 package me.xiaopan.pullview;
 
 import me.xiaopan.pullview.CompositeGestureDetector.OnTouchListener;
-import me.xiaopan.pullview.PullViewBase.Status;
+import me.xiaopan.pullview.PullViewBase.PullStatus;
 import android.view.MotionEvent;
 
 /**
@@ -44,17 +44,17 @@ public class TouchEventHandleListener implements OnTouchListener {
     @SuppressWarnings("unchecked")
 	@Override
 	public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-		switch(pullViewBase.getStatus()){
+		switch(pullViewBase.getPullStatus()){
     		case PULL_HEADER : 
     			if(pullViewBase.isVerticalPull()){
     				pullViewBase.scrollBy(0, (int) (distanceY * pullViewBase.getElasticForce()));
     				if(pullViewBase.getScrollY() >= 0 && Math.abs(distanceY) <= 10){
-    					pullViewBase.setStatus(Status.NORMAL);
+    					pullViewBase.setPullStatus(PullStatus.NORMAL);
         			}
     			}else{
     				pullViewBase.scrollBy((int) (distanceX * pullViewBase.getElasticForce()), 0);
     				if(pullViewBase.getScrollX() >= 0 && Math.abs(distanceX) <= 10){
-    					pullViewBase.setStatus(Status.NORMAL);
+    					pullViewBase.setPullStatus(PullStatus.NORMAL);
     				}
     			}
     			pullViewBase.handleScrollCallback();
@@ -64,12 +64,12 @@ public class TouchEventHandleListener implements OnTouchListener {
     			if(pullViewBase.isVerticalPull()){
     				pullViewBase.scrollBy(0, (int) (distanceY * pullViewBase.getElasticForce()));
     				if(pullViewBase.getScrollY() <= 0 && Math.abs(distanceY) <= 10){
-    					pullViewBase.setStatus(Status.NORMAL);
+    					pullViewBase.setPullStatus(PullStatus.NORMAL);
     				}
     			}else{
     				pullViewBase.scrollBy((int) (distanceX * pullViewBase.getElasticForce()), 0);
     				if(pullViewBase.getScrollX() <= 0 && Math.abs(distanceX) <= 10){
-    					pullViewBase.setStatus(Status.NORMAL);
+    					pullViewBase.setPullStatus(PullStatus.NORMAL);
     				}
     			}
     			pullViewBase.handleScrollCallback();
@@ -77,12 +77,11 @@ public class TouchEventHandleListener implements OnTouchListener {
     			break;
     		default : 
     			if(pullViewBase.isVerticalPull()){
-    				pullViewBase.logD("ScrollY");
     				if(distanceY < 0){	//如果向下拉
 	        			if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
 	        				if(pullViewBase.getScrollY() <= pullViewBase.getHeaderMinScrollValue()){
-	        					pullViewBase.logD("滚动：开始拉伸头部");
-	        					pullViewBase.setStatus(Status.PULL_HEADER);
+	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollY());
+	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
 	        				}else{
 	        					pullViewBase.logD("滚动：垂直-正在回滚头部，ScrollY=" + pullViewBase.getScrollY());
 	        					pullViewBase.scrollBy(0, (int) distanceY);
@@ -90,16 +89,16 @@ public class TouchEventHandleListener implements OnTouchListener {
 	        				}
 	        			}
 	        		}else if(distanceY > 0){	//如果向上拉
-	        			if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
-	        				if(pullViewBase.getScrollY() >= 0){
-	        					pullViewBase.logD("滚动：开始拉伸尾部");
-	        					pullViewBase.setStatus(Status.PULL_FOOTER);
-		        			}else{
-		        				pullViewBase.logD("滚动：垂直-正在回滚尾部，ScrollY=" + pullViewBase.getScrollY());
-		        				pullViewBase.scrollBy(0, (int) (distanceY));
-		        				pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-		        			}
-	        			}
+    					if(pullViewBase.getScrollY() >= 0){
+    						if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
+    							pullViewBase.logD("滚动：开始拉伸尾部，ScrollY=" + pullViewBase.getScrollY());
+    							pullViewBase.setPullStatus(PullStatus.PULL_FOOTER);
+    						}
+    					}else{
+    						pullViewBase.logD("滚动：手动回滚刷新头，ScrollY=" + pullViewBase.getScrollY());
+    						pullViewBase.scrollBy(0, (int) (distanceY));
+    						pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
+    					}
 	        		}
     			}else{
     				if(distanceX< 0){	//如果向下拉
@@ -108,14 +107,14 @@ public class TouchEventHandleListener implements OnTouchListener {
 	        				pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
 	        			}else{
 	        				if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        					pullViewBase.logD("滚动：开始拉伸头部");
-	        					pullViewBase.setStatus(Status.PULL_HEADER);
+	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollX());
+	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
 	        				}
 	        			}
 	        		}else if(distanceX > 0){	//如果向上拉
 	        			if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
-	        				pullViewBase.logD("滚动：开始拉伸尾部");
-	        				pullViewBase.setStatus(Status.PULL_FOOTER);
+	        				pullViewBase.logD("滚动：开始拉伸尾部，ScrollY=" + pullViewBase.getScrollX());
+	        				pullViewBase.setPullStatus(PullStatus.PULL_FOOTER);
 	        			}
 	        		}
     			}
@@ -126,7 +125,7 @@ public class TouchEventHandleListener implements OnTouchListener {
     
     @Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-    	pullViewBase.setIntercept(pullViewBase.getStatus() != Status.NORMAL);
+    	pullViewBase.setIntercept(pullViewBase.getPullStatus() != PullStatus.NORMAL);
 		return true;
 	}
 }

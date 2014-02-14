@@ -21,10 +21,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private boolean intercept;	//是否拦截事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
-	private Status status = Status.NORMAL;    //状态标识
+	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
 	private PullHeaderView pullHeaderView;  //拉伸头
     private RolbackScroller rollbackScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
+    private boolean forbidTouchEvent;	//禁止触摸事件
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -62,22 +63,26 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		compositeGestureDetector.onTouchEvent(ev);
-        switch(ev.getAction()){
-			case MotionEvent.ACTION_UP : rollbackScroller.rollback(); break;
-			case MotionEvent.ACTION_CANCEL : rollbackScroller.rollback(); break;
+		if(!forbidTouchEvent){
+			compositeGestureDetector.onTouchEvent(ev);
+			switch(ev.getAction()){
+				case MotionEvent.ACTION_UP : rollbackScroller.rollback(); break;
+				case MotionEvent.ACTION_CANCEL : rollbackScroller.rollback(); break;
+			}
+			if(!intercept){
+				super.dispatchTouchEvent(ev);
+			}
+			return true;
+		}else{
+			return false;
 		}
-        if(!intercept){
-        	super.dispatchTouchEvent(ev);
-        }
-		return true;
 	}
 
 	/**
      * 处理滚动回调
      */
     void handleScrollCallback(){
-    	switch(status){
+    	switch(pullStatus){
     		case PULL_HEADER :
     			if(pullHeaderView != null){
     	        	pullHeaderView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
@@ -136,6 +141,10 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 		return pullView;
 	}
 
+	/**
+	 * 获取拉伸头视图
+	 * @return
+	 */
 	PullHeaderView getPullHeaderView() {
 		return pullHeaderView;
 	}
@@ -154,26 +163,50 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
     }
 
+	/**
+	 * 获取回滚器
+	 * @return
+	 */
 	RolbackScroller getRollbackScroller() {
 		return rollbackScroller;
 	}
 
+	/**
+	 * 获取头部最小滚动位置
+	 * @return
+	 */
 	int getHeaderMinScrollValue() {
 		return headerMinScrollValue;
 	}
 
+	/**
+	 * 设置头部最小滚动位置
+	 * @param headerMinScrollValue
+	 */
 	void setHeaderMinScrollValue(int headerMinScrollValue) {
 		this.headerMinScrollValue = headerMinScrollValue;
 	}
 
+	/**
+	 * 获取尾部最小滚动位置
+	 * @return
+	 */
 	int getFooterMinScrollVaule() {
 		return footerMinScrollVaule;
 	}
 
+	/**
+	 * 设置尾部最小滚动位置
+	 * @param footerMinScrollVaule
+	 */
 	void setFooterMinScrollVaule(int footerMinScrollVaule) {
 		this.footerMinScrollVaule = footerMinScrollVaule;
 	}
 
+	/**
+	 * 获取弹力强度
+	 * @return
+	 */
 	float getElasticForce() {
 		return elasticForce;
 	}
@@ -186,22 +219,54 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 		this.elasticForce = elasticForce;
 	}
 
+	/**
+	 * 是否需要中断事件传递
+	 * @return
+	 */
 	boolean isIntercept() {
 		return intercept;
 	}
 
+	/**
+	 * 设置是否中断事件传递
+	 * @param intercept
+	 */
 	void setIntercept(boolean intercept) {
 		this.intercept = intercept;
 	}
 
-	Status getStatus() {
-		return status;
+	/**
+	 * 获取拉伸状态
+	 * @return
+	 */
+	PullStatus getPullStatus() {
+		return pullStatus;
 	}
 
-	void setStatus(Status status) {
-		this.status = status;
+	/**
+	 * 设置拉伸状态
+	 * @param pullStatus
+	 */
+	void setPullStatus(PullStatus pullStatus) {
+		this.pullStatus = pullStatus;
 	}
 	
+	/**
+	 * 是否禁止触摸事件
+	 * @return
+	 */
+	boolean isForbidTouchEvent() {
+		return forbidTouchEvent;
+	}
+
+	/**
+	 * 设置是否禁止触摸事件
+	 * @param forbidTouchEvent
+	 */
+	void setForbidTouchEvent(boolean forbidTouchEvent) {
+		this.forbidTouchEvent = forbidTouchEvent;
+	}
+
 	void logI(String msg){
 		Log.i(PullViewBase.class.getSimpleName(), msg);
 	}
@@ -215,9 +280,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	}
 	
 	/**
-	 * 状态
+	 * 拉动状态
 	 */
-	public enum Status{
+	public enum PullStatus{
 		/**
 		 * 正常
 		 */

@@ -61,7 +61,7 @@ public class RolbackScroller {
      * 回滚
      */
     public void rollback(){
-    	switch(pullViewBase.getStatus()){
+    	switch(pullViewBase.getPullStatus()){
     		case NORMAL : 
     			pullViewBase.logD("无需回滚");
     			break;
@@ -136,10 +136,18 @@ public class RolbackScroller {
         }
     }
 
+	/**
+	 * 获取滚动持续时间
+	 * @return
+	 */
 	public int getDuration() {
 		return duration;
 	}
 
+	/**
+	 * 设置滚动持续时间
+	 * @param duration
+	 */
 	public void setDuration(int duration) {
 		this.duration = duration;
 	}

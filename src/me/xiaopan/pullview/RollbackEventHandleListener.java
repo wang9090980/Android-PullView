@@ -16,7 +16,7 @@
 
 package me.xiaopan.pullview;
 
-import me.xiaopan.pullview.PullViewBase.Status;
+import me.xiaopan.pullview.PullViewBase.PullStatus;
 import me.xiaopan.pullview.RolbackScroller.OnRollbackScrollListener;
 
 /**
@@ -33,16 +33,18 @@ public class RollbackEventHandleListener implements OnRollbackScrollListener {
 
     @Override
     public void onRollbackScroll() {
+    	pullViewBase.setForbidTouchEvent(true);
     	pullViewBase.handleScrollCallback();
     }
 
     @Override
     public void onRollbackComplete(boolean isForceAbort) {
+    	pullViewBase.setForbidTouchEvent(false);
         if(isForceAbort){
         	pullViewBase.logD("回滚：中断");
         }else{
         	pullViewBase.logD("回滚：已完成");
-            pullViewBase.setStatus(Status.NORMAL);
+            pullViewBase.setPullStatus(PullStatus.NORMAL);
             if(pullViewBase.getPullHeaderView() != null){
             	if(pullViewBase.getPullHeaderView().getStatus() == PullHeaderView.Status.READY){
             		pullViewBase.getPullHeaderView().onTrigger();
