@@ -80,24 +80,24 @@ public class TouchEventHandleListener implements OnTouchListener {
     				pullViewBase.logD("ScrollY");
     				if(distanceY < 0){	//如果向下拉
 	        			if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        				if(pullViewBase.getScrollY() > pullViewBase.getHeaderMinScrollValue()){
+	        				if(pullViewBase.getScrollY() <= pullViewBase.getHeaderMinScrollValue()){
+	        					pullViewBase.logD("滚动：开始拉伸头部");
+	        					pullViewBase.setStatus(Status.PULL_HEADER);
+	        				}else{
 	        					pullViewBase.logD("滚动：垂直-正在回滚头部，ScrollY=" + pullViewBase.getScrollY());
 	        					pullViewBase.scrollBy(0, (int) distanceY);
 	        					pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-	        				}else{
-	        					pullViewBase.logD("滚动：开始拉伸头部");
-	        					pullViewBase.setStatus(Status.PULL_HEADER);
 	        				}
 	        			}
 	        		}else if(distanceY > 0){	//如果向上拉
 	        			if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
-	        				if(pullViewBase.getScrollY() < 0){
+	        				if(pullViewBase.getScrollY() >= 0){
+	        					pullViewBase.logD("滚动：开始拉伸尾部");
+	        					pullViewBase.setStatus(Status.PULL_FOOTER);
+		        			}else{
 		        				pullViewBase.logD("滚动：垂直-正在回滚尾部，ScrollY=" + pullViewBase.getScrollY());
 		        				pullViewBase.scrollBy(0, (int) (distanceY));
 		        				pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-		        			}else{
-		        				pullViewBase.logD("滚动：开始拉伸尾部");
-		        				pullViewBase.setStatus(Status.PULL_FOOTER);
 		        			}
 	        			}
 	        		}
