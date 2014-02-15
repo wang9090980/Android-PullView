@@ -35,7 +35,7 @@ public abstract class PullHeaderView extends LinearLayout{
     				onStatusChange(status);
     			}
     			break;
-    		case TRIGGER : 
+    		case TRIGGERING :
     			break;
     		case TRIGGER_TO_NORMAL : 
     			break;
@@ -46,7 +46,7 @@ public abstract class PullHeaderView extends LinearLayout{
      * 当触发
      */
     void onTrigger(){
-    	status = Status.TRIGGER;
+    	status = Status.TRIGGERING;
 		onStatusChange(status);
     }
     
@@ -78,7 +78,23 @@ public abstract class PullHeaderView extends LinearLayout{
 		return status;
 	}
 
-	void setControllCallback(ControllCallback controllCallback) {
+    /**
+     * 设置状态
+     * @param status
+     */
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    /**
+     * 触发中
+     * @return
+     */
+    public boolean isTriggering(){
+        return status == Status.TRIGGERING;
+    }
+
+    void setControllCallback(ControllCallback controllCallback) {
 		this.controllCallback = controllCallback;
 	}
     
@@ -117,9 +133,9 @@ public abstract class PullHeaderView extends LinearLayout{
     	READY, 
     	
     	/**
-    	 * 触发
+    	 * 触发中
     	 */
-    	TRIGGER, 
+    	TRIGGERING,
     	
     	/**
     	 * 触发到正常

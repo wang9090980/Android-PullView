@@ -129,7 +129,7 @@ public class PullToRefreshHeader extends PullHeaderView{
 					onRefreshListener.onReady();
 				}
 				break;
-			case TRIGGER :
+			case TRIGGERING :
 				hintTextView.setText("正在刷新…");
 				arrowImageView.setVisibility(View.INVISIBLE);
 				progressBar.setVisibility(View.VISIBLE);

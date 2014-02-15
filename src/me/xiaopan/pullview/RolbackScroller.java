@@ -26,7 +26,7 @@ public class RolbackScroller {
      * 回滚
      * @param endLocation 结束位置
      */
-	public void rollback(int endLocation){
+	public void scroll(int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
@@ -47,14 +47,14 @@ public class RolbackScroller {
      * 回滚头部
      */
     public void rollbackHeader(){
-    	rollback(pullViewBase.getHeaderMinScrollValue());
+        scroll(pullViewBase.getHeaderMinScrollValue());
     }
 
     /**
      * 回滚尾部
      */
     public void rollbackFooter(){
-    	rollback(pullViewBase.getFooterMinScrollVaule());
+        scroll(pullViewBase.getFooterMinScrollVaule());
     }
 
     /**
@@ -62,14 +62,14 @@ public class RolbackScroller {
      */
     public void rollback(){
     	switch(pullViewBase.getPullStatus()){
-    		case NORMAL : 
+    		case NORMAL :
     			pullViewBase.logD("无需回滚");
     			break;
-	    	case PULL_HEADER : 
+	    	case PULL_HEADER :
 	    		pullViewBase.logD("回滚-头部");
 	    		rollbackHeader();
 	    		break;
-	    	case PULL_FOOTER : 
+	    	case PULL_FOOTER :
 	    		pullViewBase.logD("回滚-尾部");
 	    		rollbackFooter();
 	    		break;
@@ -94,7 +94,7 @@ public class RolbackScroller {
     	 * 回滚
     	 */
     	public void onRollbackScroll();
-    	
+
     	/**
     	 * 回滚完成
     	 * @param isForceAbort 是否被强行中止

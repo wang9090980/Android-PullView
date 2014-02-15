@@ -22,7 +22,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
     private T pullView; //被拉的视图
 	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
-	private PullHeaderView pullHeaderView;  //拉伸头
+	private PullHeaderView pullHeaderView;  //拉伸
     private RolbackScroller rollbackScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
     private boolean forbidTouchEvent;	//禁止触摸事件
@@ -46,7 +46,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         rollbackScroller = new RolbackScroller(this, new RollbackEventHandleListener(this));
         compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
         addViewToSelf = true;
-		addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
 	}
 
@@ -157,15 +157,29 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         this.pullHeaderView = pullHeaderView;
         pullHeaderView.setControllCallback(new PullHeaderViewControllCallback(this));
         addViewToSelf = true;
-        addView(pullHeaderView, 0);
+        addView(pullHeaderView, 0, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         addViewToSelf = false;
         ViewUtils.measure(pullHeaderView);
         setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
     }
 
+    /**
+     * 触发Header
+     * @return true：启动成功；false：启动失败，原因是没有Header或Header正在触发中
+     */
+    public boolean triggerHeader(){
+        if(pullHeaderView != null && !pullHeaderView.isTriggering()){
+            pullHeaderView.setStatus(PullHeaderView.Status.READY);
+            rollbackScroller.scroll(pullHeaderView.getMeasuredHeight());
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 	/**
 	 * 获取回滚器
-	 * @return
+	 * @returnN
 	 */
 	RolbackScroller getRollbackScroller() {
 		return rollbackScroller;

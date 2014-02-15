@@ -13,6 +13,8 @@ import me.xiaopan.pullview.widget.PullListView;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -62,27 +64,44 @@ public class MainActivity extends ListActivity{
         });
         final PullToRefreshHeader pullToRefreshHeader = new PullToRefreshHeader(getBaseContext());
         pullToRefreshHeader.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onNormal() {
-				ToastUtils.toastS(getBaseContext(), "恢复");
-			}
-			
-			@Override
-			public void onReady() {
-				ToastUtils.toastS(getBaseContext(), "准备");
-			}
-			
-			@Override
-			public void onRefresh() {
-				ToastUtils.toastS(getBaseContext(), "刷新");
-				new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						pullToRefreshHeader.complete();
-					}
-				}, 10000);
-			}
-		});
+            @Override
+            public void onNormal() {
+                ToastUtils.toastS(getBaseContext(), "恢复");
+            }
+
+            @Override
+            public void onReady() {
+                ToastUtils.toastS(getBaseContext(), "准备");
+            }
+
+            @Override
+            public void onRefresh() {
+                ToastUtils.toastS(getBaseContext(), "刷新");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullToRefreshHeader.complete();
+                    }
+                }, 10000);
+            }
+        });
         pullListView.setPullHeaderView(pullToRefreshHeader);
+        pullListView.triggerHeader();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_main_refresh :
+                pullListView.triggerHeader();
+                break;
+        }
+        return super.onMenuItemSelected(featureId, item);
     }
 }

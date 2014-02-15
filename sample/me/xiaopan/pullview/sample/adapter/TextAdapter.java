@@ -28,8 +28,7 @@ import android.widget.TextView;
 public class TextAdapter extends BaseAdapter{
 	private Context conetxt;
 	private List<Text> texts;
-	private Text text;
-	
+
 	public TextAdapter(Context conetxt, List<Text> texts){
 		this.conetxt = conetxt;
 		this.texts = texts;
@@ -52,23 +51,12 @@ public class TextAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		ViewHolder viewHolder;
-		if(convertView == null){
-			viewHolder = new ViewHolder();
-			convertView = LayoutInflater.from(conetxt).inflate(R.layout.list_item_text, null);
-			viewHolder.text = (TextView) convertView.findViewById(R.id.text_textItem_text);
-			convertView.setTag(viewHolder);
-		}else{
-			viewHolder = (ViewHolder) convertView.getTag();
+        if(convertView == null){
+            convertView = LayoutInflater.from(conetxt).inflate(R.layout.list_item_text, null);
 		}
-		
-		text = texts.get(position);
-		viewHolder.text.setText(text.getText());
+
+        ((TextView) convertView).setText(texts.get(position).getText());
 		return convertView;
-	}
-	
-	class ViewHolder{
-		private TextView text;
 	}
 	
 	public interface Text{
