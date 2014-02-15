@@ -54,7 +54,7 @@ public class PullScroller {
      * 回滚尾部
      */
     public void rollbackFooter(){
-        scroll(pullViewBase.getFooterMinScrollVaule());
+        scroll(pullViewBase.getPullFooterView() != null?pullViewBase.getPullFooterView().getMinScrollValue():0);
     }
 
     /**

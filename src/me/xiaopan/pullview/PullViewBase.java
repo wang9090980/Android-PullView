@@ -17,16 +17,16 @@ import android.widget.LinearLayout;
  * @param <T>
  */
 public abstract class PullViewBase<T extends View> extends LinearLayout{
-	private int footerMinScrollVaule;	//尾部最小滚动值
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
 	private boolean intercept;	//是否拦截事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
+    private boolean forbidTouchEvent;	//禁止触摸事件
     private T pullView; //被拉的视图
 	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
-	private PullHeaderView pullHeaderView;  //拉伸
-    private PullScroller pullScroller;  //滚动器，用来回滚
+	private PullScroller pullScroller;  //滚动器，用来回滚
+	private PullHeaderView pullHeaderView;  //头
+	private PullHeaderView pullFooterView;	//尾巴
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
-    private boolean forbidTouchEvent;	//禁止触摸事件
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -163,8 +163,20 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         ViewUtils.measure(pullHeaderView);
         setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
     }
+    
+    PullHeaderView getPullFooterView() {
+		return pullFooterView;
+	}
 
-    /**
+	/**
+     * 设置尾巴
+     * @param pullFooterView
+     */
+    public void setPullFooterView(PullHeaderView pullFooterView) {
+		this.pullFooterView = pullFooterView;
+	}
+
+	/**
      * 触发Header
      * @return true：启动成功；false：启动失败，原因是没有Header或Header正在触发中
      */
@@ -196,22 +208,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	 */
 	PullScroller getPullScroller() {
 		return pullScroller;
-	}
-
-	/**
-	 * 获取尾部最小滚动位置
-	 * @return
-	 */
-	int getFooterMinScrollVaule() {
-		return footerMinScrollVaule;
-	}
-
-	/**
-	 * 设置尾部最小滚动位置
-	 * @param footerMinScrollVaule
-	 */
-	void setFooterMinScrollVaule(int footerMinScrollVaule) {
-		this.footerMinScrollVaule = footerMinScrollVaule;
 	}
 
 	/**
