@@ -6,16 +6,16 @@ import android.widget.Scroller;
 /**
  * 回滚滚动器
  */
-public class RolbackScroller {
+public class PullScroller {
     private boolean abort;
     private boolean scrolling;
 	private PullViewBase<?> pullViewBase;
     private Scroller scroller;
     private ExecuteRunnable executeRunnable;
-    private OnRollbackScrollListener onRollbackScrollListener;
+    private OnScrollListener onRollbackScrollListener;
     private int duration = 350;
 
-	public RolbackScroller(PullViewBase<?> view, OnRollbackScrollListener onRollbackScrollListener){
+	public PullScroller(PullViewBase<?> view, OnScrollListener onRollbackScrollListener){
 		this.pullViewBase = view;
 		this.onRollbackScrollListener = onRollbackScrollListener;
         this.executeRunnable = new ExecuteRunnable();
@@ -47,7 +47,7 @@ public class RolbackScroller {
      * 回滚头部
      */
     public void rollbackHeader(){
-        scroll(pullViewBase.getHeaderMinScrollValue());
+    	scroll(pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0);
     }
 
     /**
@@ -89,17 +89,17 @@ public class RolbackScroller {
     /**
      * 回滚滚动监听器
      */
-    public interface OnRollbackScrollListener{
+    public interface OnScrollListener{
     	/**
-    	 * 回滚
+    	 * 滚动
     	 */
-    	public void onRollbackScroll();
+    	public void onScroll();
 
     	/**
     	 * 回滚完成
     	 * @param isForceAbort 是否被强行中止
     	 */
-    	public void onRollbackComplete(boolean isForceAbort);
+    	public void onComplete(boolean isForceAbort);
     }
 
     /**
@@ -123,13 +123,14 @@ public class RolbackScroller {
                 }else{
                 	pullViewBase.scrollTo(scroller.getCurrX(), pullViewBase.getScrollY());
                 }
+                pullViewBase.invalidate();
                 if(onRollbackScrollListener != null){
-                    onRollbackScrollListener.onRollbackScroll();
+                    onRollbackScrollListener.onScroll();
                 }
                 pullViewBase.post(executeRunnable);
             }else{
                 if(onRollbackScrollListener != null){
-                    onRollbackScrollListener.onRollbackComplete(abort);
+                    onRollbackScrollListener.onComplete(abort);
                 }
                 scrolling = false;
             }

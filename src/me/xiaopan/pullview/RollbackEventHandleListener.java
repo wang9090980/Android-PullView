@@ -16,14 +16,14 @@
 
 package me.xiaopan.pullview;
 
+import me.xiaopan.pullview.PullScroller.OnScrollListener;
 import me.xiaopan.pullview.PullViewBase.PullStatus;
-import me.xiaopan.pullview.RolbackScroller.OnRollbackScrollListener;
 
 /**
  * 回滚事件处理监听器
  */
 @SuppressWarnings("rawtypes")
-public class RollbackEventHandleListener implements OnRollbackScrollListener {
+public class RollbackEventHandleListener implements OnScrollListener {
 	private PullViewBase pullViewBase;
     
     public RollbackEventHandleListener(PullViewBase pullViewBase) {
@@ -32,13 +32,13 @@ public class RollbackEventHandleListener implements OnRollbackScrollListener {
 	}
 
     @Override
-    public void onRollbackScroll() {
+    public void onScroll() {
     	pullViewBase.setForbidTouchEvent(true);
     	pullViewBase.handleScrollCallback();
     }
 
     @Override
-    public void onRollbackComplete(boolean isForceAbort) {
+    public void onComplete(boolean isForceAbort) {
     	pullViewBase.setForbidTouchEvent(false);
         if(isForceAbort){
         	pullViewBase.logD("回滚：中断");

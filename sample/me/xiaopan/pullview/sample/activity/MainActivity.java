@@ -82,7 +82,7 @@ public class MainActivity extends ListActivity{
                     public void run() {
                         pullToRefreshHeader.complete();
                     }
-                }, 10000);
+                }, 5000);
             }
         });
         pullListView.setPullHeaderView(pullToRefreshHeader);

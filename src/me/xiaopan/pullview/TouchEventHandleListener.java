@@ -34,8 +34,8 @@ public class TouchEventHandleListener implements OnTouchListener {
 
 	@Override
     public boolean onTouchDown(MotionEvent e) {
-        if(pullViewBase.getRollbackScroller().isScrolling()){
-        	pullViewBase.getRollbackScroller().abortScroll();
+        if(pullViewBase.getPullScroller().isScrolling()){
+        	pullViewBase.getPullScroller().abortScroll();
         }
         pullViewBase.setIntercept(false);
         return true;
@@ -79,7 +79,7 @@ public class TouchEventHandleListener implements OnTouchListener {
     			if(pullViewBase.isVerticalPull()){
     				if(distanceY < 0){	//如果向下拉
 	        			if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        				if(pullViewBase.getScrollY() <= pullViewBase.getHeaderMinScrollValue()){
+	        				if(pullViewBase.getScrollY() <= (pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0)){
 	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollY());
 	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
 	        				}else{
@@ -102,13 +102,15 @@ public class TouchEventHandleListener implements OnTouchListener {
 	        		}
     			}else{
     				if(distanceX< 0){	//如果向下拉
-	        			if(distanceX > pullViewBase.getHeaderMinScrollValue()){
-	        				pullViewBase.scrollBy((int) distanceX, 0);
-	        				pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-	        			}else{
-	        				if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollX());
-	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
+	        			if(pullViewBase.getPullHeaderView() != null){
+	        				if(distanceX > pullViewBase.getPullHeaderView().getMinScrollValue()){
+	        					pullViewBase.scrollBy((int) distanceX, 0);
+	        					pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
+	        				}else{
+	        					if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
+	        						pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollX());
+	        						pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
+	        					}
 	        				}
 	        			}
 	        		}else if(distanceX > 0){	//如果向上拉

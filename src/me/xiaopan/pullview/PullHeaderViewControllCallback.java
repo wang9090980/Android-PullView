@@ -9,17 +9,7 @@ public class PullHeaderViewControllCallback implements PullHeaderView.ControllCa
 	}
 	
 	@Override
-	public void onShow() {
-		pullViewBase.setHeaderMinScrollValue(-pullViewBase.getPullHeaderView().getHeight());
-	}
-
-	@Override
-	public void onHide() {
-		pullViewBase.setHeaderMinScrollValue(0);
-	}
-
-	@Override
 	public void onRollback() {
-		pullViewBase.getRollbackScroller().rollbackHeader();
+		pullViewBase.getPullScroller().rollbackHeader();
 	}
 }

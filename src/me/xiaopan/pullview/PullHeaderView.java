@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 public abstract class PullHeaderView extends LinearLayout{
     private Status status = Status.NORMAL;
     private ControllCallback controllCallback;
+    private int minScrollValue;	//最小滚动值
     
 	public PullHeaderView(Context context) {
         super(context);
@@ -23,16 +24,12 @@ public abstract class PullHeaderView extends LinearLayout{
     	switch(status){
     		case NORMAL:
     			if(distance >= getHeight()){
-    				status = Status.READY;
-    				controllCallback.onShow();
-    				onStatusChange(status);
+    				setStatus(Status.READY);
     			}
     			break;
     		case READY :
     			if(distance < getHeight()){
-					status = Status.NORMAL;
-					controllCallback.onHide();
-    				onStatusChange(status);
+    				setStatus(Status.NORMAL);
     			}
     			break;
     		case TRIGGERING :
@@ -46,29 +43,22 @@ public abstract class PullHeaderView extends LinearLayout{
      * 当触发
      */
     void onTrigger(){
-    	status = Status.TRIGGERING;
-		onStatusChange(status);
+		setStatus(Status.TRIGGERING);
     }
     
     /**
      * 当完成
      */
     void onComplete(){
-    	status = Status.NORMAL;
-		onStatusChange(status);
+		setStatus(Status.NORMAL);
     }
     
     /**
      * 完成
      */
     public void complete(){
-    	status = Status.TRIGGER_TO_NORMAL;
-		controllCallback.onHide();
-		controllCallback.onRollback();
-    	onStatusChange(status);
+    	setStatus(Status.TRIGGER_TO_NORMAL);
     }
-    
-    protected abstract void onStatusChange(Status newStatus);
 
 	/**
 	 * 获取状态
@@ -84,6 +74,7 @@ public abstract class PullHeaderView extends LinearLayout{
      */
     public void setStatus(Status status) {
         this.status = status;
+        onStatusChange(status);
     }
 
     /**
@@ -99,19 +90,34 @@ public abstract class PullHeaderView extends LinearLayout{
 	}
     
     /**
+     *   获取最小滚动值
+     * @return
+     */
+    public int getMinScrollValue() {
+		return minScrollValue;
+	}
+    
+    protected void onStatusChange(Status newStatus){
+    	switch(newStatus){
+			case NORMAL:
+				minScrollValue = 0;
+				break;
+			case READY :
+				minScrollValue = -getHeight();
+				break;
+			case TRIGGERING :
+				break;
+			case TRIGGER_TO_NORMAL : 
+				minScrollValue = 0;
+				controllCallback.onRollback();
+				break;
+		}
+    }
+
+	/**
      * 控制回调
      */
     public interface ControllCallback{
-    	/**
-    	 * 显示
-    	 */
-    	public void onShow();
-    	
-    	/**
-    	 * 隐藏
-    	 */
-    	public void onHide();
-    	
     	/**
     	 * 回滚
     	 */

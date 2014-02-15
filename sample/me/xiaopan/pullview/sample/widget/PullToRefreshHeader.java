@@ -114,6 +114,7 @@ public class PullToRefreshHeader extends PullHeaderView{
 
 	@Override
 	protected void onStatusChange(Status newStatus) {
+		super.onStatusChange(newStatus);
 		switch(newStatus){
 			case NORMAL:
 				hintTextView.setText("下拉刷新");

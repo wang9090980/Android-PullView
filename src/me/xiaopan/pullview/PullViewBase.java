@@ -1,5 +1,6 @@
 package me.xiaopan.pullview;
 
+import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,6 +9,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.LinearLayout;
 
 /**
@@ -15,7 +17,6 @@ import android.widget.LinearLayout;
  * @param <T>
  */
 public abstract class PullViewBase<T extends View> extends LinearLayout{
-	private int headerMinScrollValue;	//头部最小滚动值
 	private int footerMinScrollVaule;	//尾部最小滚动值
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
 	private boolean intercept;	//是否拦截事件
@@ -23,7 +24,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     private T pullView; //被拉的视图
 	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
 	private PullHeaderView pullHeaderView;  //拉伸
-    private RolbackScroller rollbackScroller;  //滚动器，用来回滚
+    private PullScroller pullScroller;  //滚动器，用来回滚
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
     private boolean forbidTouchEvent;	//禁止触摸事件
 
@@ -43,7 +44,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private void init(){
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
-        rollbackScroller = new RolbackScroller(this, new RollbackEventHandleListener(this));
+        pullScroller = new PullScroller(this, new RollbackEventHandleListener(this));
         compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
         addViewToSelf = true;
         addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -66,8 +67,8 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 		if(!forbidTouchEvent){
 			compositeGestureDetector.onTouchEvent(ev);
 			switch(ev.getAction()){
-				case MotionEvent.ACTION_UP : rollbackScroller.rollback(); break;
-				case MotionEvent.ACTION_CANCEL : rollbackScroller.rollback(); break;
+				case MotionEvent.ACTION_UP : pullScroller.rollback(); break;
+				case MotionEvent.ACTION_CANCEL : pullScroller.rollback(); break;
 			}
 			if(!intercept){
 				super.dispatchTouchEvent(ev);
@@ -168,37 +169,33 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      * @return true：启动成功；false：启动失败，原因是没有Header或Header正在触发中
      */
     public boolean triggerHeader(){
-        if(pullHeaderView != null && !pullHeaderView.isTriggering()){
-            pullHeaderView.setStatus(PullHeaderView.Status.READY);
-            rollbackScroller.scroll(pullHeaderView.getMeasuredHeight());
-            return true;
-        }else{
-            return false;
-        }
+    	if(pullHeaderView != null && !pullHeaderView.isTriggering()){
+    		if(getHeight() == 0){
+    			getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+    				@Override
+    				public void onGlobalLayout() {
+    					AndroidLogger.e("onGlobalLayout");
+    					triggerHeader();
+    					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+    				}
+    			});
+    		}else{
+    			AndroidLogger.e("triggerHeader");
+    			pullHeaderView.setStatus(PullHeaderView.Status.READY);
+    			pullScroller.scroll(pullHeaderView.getMeasuredHeight());
+    		}
+    		return true;
+    	}else{
+    		return false;
+    	}
     }
 
 	/**
-	 * 获取回滚器
+	 * 获取滚动器
 	 * @returnN
 	 */
-	RolbackScroller getRollbackScroller() {
-		return rollbackScroller;
-	}
-
-	/**
-	 * 获取头部最小滚动位置
-	 * @return
-	 */
-	int getHeaderMinScrollValue() {
-		return headerMinScrollValue;
-	}
-
-	/**
-	 * 设置头部最小滚动位置
-	 * @param headerMinScrollValue
-	 */
-	void setHeaderMinScrollValue(int headerMinScrollValue) {
-		this.headerMinScrollValue = headerMinScrollValue;
+	PullScroller getPullScroller() {
+		return pullScroller;
 	}
 
 	/**
