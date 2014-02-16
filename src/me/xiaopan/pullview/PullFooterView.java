@@ -1,7 +1,6 @@
 package me.xiaopan.pullview;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 /**
@@ -11,24 +10,25 @@ public abstract class PullFooterView extends LinearLayout{
     private Status status = Status.NORMAL;
     private ControllCallback controllCallback;
     private int minScrollValue;	//最小滚动值
+    private PullViewBase<?> pullViewBase;
     
 	public PullFooterView(Context context) {
         super(context);
     }
-
-    public PullFooterView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+	
+    void setPullViewBase(PullViewBase<?> pullViewBase) {
+		this.pullViewBase = pullViewBase;
+	}
 
     protected void onScroll(int distance){
     	switch(status){
     		case NORMAL:
-    			if(distance >= getWidth()){
+    			if(distance >= (pullViewBase.isVerticalPull()?getHeight():getWidth())){
     				setStatus(Status.READY);
     			}
     			break;
     		case READY :
-    			if(distance < getWidth()){
+    			if(distance < (pullViewBase.isVerticalPull()?getHeight():getWidth())){
     				setStatus(Status.NORMAL);
     			}
     			break;
@@ -103,7 +103,7 @@ public abstract class PullFooterView extends LinearLayout{
 				minScrollValue = 0;
 				break;
 			case READY :
-				minScrollValue = getWidth();
+				minScrollValue = (pullViewBase.isVerticalPull()?getHeight():getWidth());
 				break;
 			case TRIGGERING :
 				break;

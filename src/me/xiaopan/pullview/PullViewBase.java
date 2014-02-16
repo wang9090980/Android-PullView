@@ -187,6 +187,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      */
     public void setPullHeaderView(PullHeaderView pullHeaderView) {
         this.pullHeaderView = pullHeaderView;
+        pullHeaderView.setPullViewBase(this);
         pullHeaderView.setControllCallback(new PullHeaderView.ControllCallback() {
 			@Override
 			public void onRollback() {
@@ -215,6 +216,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      */
     public void setPullFooterView(PullFooterView pullFooterView) {
 		this.pullFooterView = pullFooterView;
+		pullFooterView.setPullViewBase(this);
 		pullFooterView.setControllCallback(new PullFooterView.ControllCallback() {
 			@Override
 			public void onRollback() {

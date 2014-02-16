@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,16 +28,6 @@ public class PulldownToRefreshHorizontalHeader extends PullHeaderView{
     	super(context);
     	this.onRefreshListener = onRefreshListener;
     	init();
-    }
-
-    public PulldownToRefreshHorizontalHeader(Context context) {
-        super(context);
-        init();
-    }
-
-    public PulldownToRefreshHorizontalHeader(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init();
     }
 
     private void init(){
