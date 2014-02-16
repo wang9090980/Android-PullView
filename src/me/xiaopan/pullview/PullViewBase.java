@@ -158,7 +158,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         this.pullHeaderView = pullHeaderView;
         pullHeaderView.setControllCallback(new PullHeaderViewControllCallback(this));
         addViewToSelf = true;
-        addView(pullHeaderView, 0, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        addView(pullHeaderView, 0, new LayoutParams(isVerticalPull()?ViewGroup.LayoutParams.MATCH_PARENT:ViewGroup.LayoutParams.WRAP_CONTENT, isVerticalPull()?ViewGroup.LayoutParams.WRAP_CONTENT:ViewGroup.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
         ViewUtils.measure(pullHeaderView);
         setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());

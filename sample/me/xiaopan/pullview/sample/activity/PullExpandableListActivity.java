@@ -7,18 +7,24 @@ import me.xiaopan.pullview.R;
 import me.xiaopan.pullview.sample.adapter.GroupAadpter;
 import me.xiaopan.pullview.sample.adapter.TextAdapter;
 import me.xiaopan.pullview.sample.domain.ActivityEntry;
-import android.app.ExpandableListActivity;
+import me.xiaopan.pullview.sample.widget.PullToRefreshHeader;
+import me.xiaopan.pullview.sample.widget.PullToRefreshHeader.OnRefreshListener;
+import me.xiaopan.pullview.widget.PullExpandableListView;
+import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 
 /**
  * Created by xiaopan on 13-12-17.
  */
-public class PullExpandableListActivity extends ExpandableListActivity {
-
+public class PullExpandableListActivity extends Activity {
+	private PullExpandableListView pullExpandableListView;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expandable_list);
+        pullExpandableListView = (PullExpandableListView) findViewById(android.R.id.list);
 
         List<TextAdapter.Text> entrys = new ArrayList<TextAdapter.Text>();
         for(int w = 0; w < 25; w++){
@@ -35,7 +41,31 @@ public class PullExpandableListActivity extends ExpandableListActivity {
             groups.add(new GroupAadpter.Group("第"+(w+1)+"组", texts));
         }
 
-        getExpandableListView().setAdapter(new GroupAadpter(getBaseContext(), groups));
-        getExpandableListView().setGroupIndicator(null);
+        pullExpandableListView.getPullView().setAdapter(new GroupAadpter(getBaseContext(), groups));
+        pullExpandableListView.getPullView().setGroupIndicator(null);
+        
+        final PullToRefreshHeader pullToRefreshHeader = new PullToRefreshHeader(getBaseContext());
+        pullToRefreshHeader.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onNormal() {
+            }
+
+            @Override
+            public void onReady() {
+            }
+
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullToRefreshHeader.complete();
+                    }
+                }, 5000);
+            }
+        });
+        
+        pullExpandableListView.setPullHeaderView(pullToRefreshHeader);
+        pullExpandableListView.triggerHeader();
     }
 }

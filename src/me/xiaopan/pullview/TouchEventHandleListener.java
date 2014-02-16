@@ -101,16 +101,15 @@ public class TouchEventHandleListener implements OnTouchListener {
     					}
 	        		}
     			}else{
-    				if(distanceX< 0){	//如果向下拉
-	        			if(pullViewBase.getPullHeaderView() != null){
-	        				if(distanceX > pullViewBase.getPullHeaderView().getMinScrollValue()){
+    				if(distanceX< 0){	//如果向右拉
+    					if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
+	        				if(pullViewBase.getScrollX() <= (pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0)){
+	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollX=" + pullViewBase.getScrollX());
+	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
+	        				}else{
+	        					pullViewBase.logD("滚动：正在回滚头部，ScrollY=" + pullViewBase.getScrollX());
 	        					pullViewBase.scrollBy((int) distanceX, 0);
 	        					pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-	        				}else{
-	        					if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        						pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollX());
-	        						pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
-	        					}
 	        				}
 	        			}
 	        		}else if(distanceX > 0){	//如果向上拉
