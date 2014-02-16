@@ -11,22 +11,23 @@ public class PullScroller {
     private boolean scrolling;
 	private PullViewBase<?> pullViewBase;
     private Scroller scroller;
-    private ExecuteRunnable executeRunnable;
+//    private ExecuteRunnable executeRunnable;
     private OnScrollListener onRollbackScrollListener;
     private int duration = 350;
 
 	public PullScroller(PullViewBase<?> view, OnScrollListener onRollbackScrollListener){
 		this.pullViewBase = view;
 		this.onRollbackScrollListener = onRollbackScrollListener;
-        this.executeRunnable = new ExecuteRunnable();
+//        this.executeRunnable = new ExecuteRunnable();
         this.scroller = new Scroller(view.getContext(), new AccelerateDecelerateInterpolator());
 	}
 
     /**
      * 回滚
+     * @param isScrollHeader
      * @param endLocation 结束位置
      */
-	public void scroll(int endLocation){
+	public void scroll(boolean isScrollHeader, int endLocation){
         if(!scroller.isFinished()){
             scroller.abortAnimation();
         }
@@ -35,11 +36,11 @@ public class PullScroller {
         if(pullViewBase.isVerticalPull()){
         	int currentScrollY = pullViewBase.getScrollY();
         	scroller.startScroll(0, currentScrollY, 0, Math.abs(currentScrollY - endLocation) * (currentScrollY<0?1:-1), duration);
-        	pullViewBase.post(executeRunnable);
+        	pullViewBase.post(new ExecuteRunnable(isScrollHeader));
         }else{
         	int currentScrollX = pullViewBase.getScrollX();
         	scroller.startScroll(currentScrollX, 0, Math.abs(currentScrollX - endLocation) * (currentScrollX<0?1:-1), 0, duration);
-        	pullViewBase.post(executeRunnable);
+        	pullViewBase.post(new ExecuteRunnable(isScrollHeader));
         }
     }
 
@@ -47,14 +48,14 @@ public class PullScroller {
      * 回滚头部
      */
     public void rollbackHeader(){
-    	scroll(pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0);
+    	scroll(true, pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0);
     }
 
     /**
      * 回滚尾部
      */
     public void rollbackFooter(){
-        scroll(pullViewBase.getPullFooterView() != null?pullViewBase.getPullFooterView().getMinScrollValue():0);
+        scroll(false, pullViewBase.getPullFooterView() != null?pullViewBase.getPullFooterView().getMinScrollValue():0);
     }
 
     /**
@@ -92,14 +93,16 @@ public class PullScroller {
     public interface OnScrollListener{
     	/**
     	 * 滚动
+    	 * @param isScrollHeader
     	 */
-    	public void onScroll();
+    	public void onScroll(boolean isScrollHeader);
 
     	/**
     	 * 回滚完成
+    	 * @param isScrollHeader
     	 * @param isForceAbort 是否被强行中止
     	 */
-    	public void onComplete(boolean isForceAbort);
+    	public void onComplete(boolean isScrollHeader, boolean isForceAbort);
     }
 
     /**
@@ -114,6 +117,12 @@ public class PullScroller {
      * 执行Runnable
      */
     private class ExecuteRunnable implements Runnable{
+    	private boolean isScrollHeader;
+    	
+    	public ExecuteRunnable(boolean isScrollHeader){
+    		this.isScrollHeader = isScrollHeader;
+    	}
+    	
         @Override
         public void run() {
             if(scroller.computeScrollOffset()){
@@ -125,12 +134,12 @@ public class PullScroller {
                 }
                 pullViewBase.invalidate();
                 if(onRollbackScrollListener != null){
-                    onRollbackScrollListener.onScroll();
+                    onRollbackScrollListener.onScroll(isScrollHeader);
                 }
-                pullViewBase.post(executeRunnable);
+                pullViewBase.post(this);
             }else{
                 if(onRollbackScrollListener != null){
-                    onRollbackScrollListener.onComplete(abort);
+                    onRollbackScrollListener.onComplete(isScrollHeader, abort);
                 }
                 scrolling = false;
             }

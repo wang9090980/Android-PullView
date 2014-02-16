@@ -2,7 +2,6 @@ package me.xiaopan.pullview;
 
 import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
-import me.xiaopan.pullview.PullHeaderView.ControllCallback;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,7 +25,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
 	private PullScroller pullScroller;  //滚动器，用来回滚
 	private PullHeaderView pullHeaderView;  //头
-	private PullHeaderView pullFooterView;	//尾巴
+	private PullFooterView pullFooterView;	//尾巴
     private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
@@ -45,7 +44,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private void init(){
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
-        pullScroller = new PullScroller(this, new RollbackEventHandleListener(this));
+        pullScroller = new PullScroller(this, new PullScrollListener(this));
         compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
         addViewToSelf = true;
         addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -189,7 +188,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      */
     public void setPullHeaderView(PullHeaderView pullHeaderView) {
         this.pullHeaderView = pullHeaderView;
-        pullHeaderView.setControllCallback(new ControllCallback() {
+        pullHeaderView.setControllCallback(new PullHeaderView.ControllCallback() {
 			@Override
 			public void onRollback() {
 				getPullScroller().rollbackHeader();
@@ -202,7 +201,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
     }
     
-    PullHeaderView getPullFooterView() {
+    PullFooterView getPullFooterView() {
 		return pullFooterView;
 	}
 
@@ -210,9 +209,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      * 设置尾巴
      * @param pullFooterView
      */
-    public void setPullFooterView(PullHeaderView pullFooterView) {
+    public void setPullFooterView(PullFooterView pullFooterView) {
 		this.pullFooterView = pullFooterView;
-		pullFooterView.setControllCallback(new ControllCallback() {
+		pullFooterView.setControllCallback(new PullFooterView.ControllCallback() {
 			@Override
 			public void onRollback() {
 				getPullScroller().rollbackFooter();
@@ -244,7 +243,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     		}else{
     			AndroidLogger.e("triggerHeader");
     			pullHeaderView.setStatus(PullHeaderView.Status.READY);
-    			pullScroller.scroll(pullHeaderView.getMeasuredHeight());
+    			pullScroller.scroll(true, pullHeaderView.getMeasuredHeight());
     		}
     		return true;
     	}else{

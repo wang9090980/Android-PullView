@@ -93,6 +93,7 @@ public class MainActivity extends ListActivity{
         pullToRefreshFooter.setOnRefreshListener(new PullToRefreshFooter.OnRefreshListener() {
             @Override
             public void onRefresh() {
+            	ToastUtils.toastS(getBaseContext(), "刷新");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
