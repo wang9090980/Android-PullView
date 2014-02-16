@@ -7,11 +7,11 @@ import android.view.MotionEvent;
 /**
  * 综合手势识别器
  */
-public class CompositeGestureDetector implements GestureDetector.OnGestureListener{
+public class PullGestureDetector implements GestureDetector.OnGestureListener{
     private GestureDetector gestureDetector;    //手势识别器
     private OnTouchListener onTouchListener;
 
-    public CompositeGestureDetector(Context context, OnTouchListener onTouchListener) {
+    public PullGestureDetector(Context context, OnTouchListener onTouchListener) {
         this.onTouchListener = onTouchListener;
         gestureDetector = new GestureDetector(context, this);
     }

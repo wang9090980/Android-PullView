@@ -26,7 +26,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private PullScroller pullScroller;  //滚动器，用来回滚
 	private PullHeaderView pullHeaderView;  //头
 	private PullFooterView pullFooterView;	//尾巴
-    private CompositeGestureDetector compositeGestureDetector;  //综合的手势识别器
+    private PullGestureDetector pullGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -45,7 +45,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
         pullScroller = new PullScroller(this, new PullScrollListener(this));
-        compositeGestureDetector = new CompositeGestureDetector(getContext(), new TouchEventHandleListener(this));
+        pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchEventListener(this));
         addViewToSelf = true;
         addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
@@ -94,7 +94,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		if(!forbidTouchEvent){
-			compositeGestureDetector.onTouchEvent(ev);
+			pullGestureDetector.onTouchEvent(ev);
 			switch(ev.getAction()){
 				case MotionEvent.ACTION_UP : pullScroller.rollback(); break;
 				case MotionEvent.ACTION_CANCEL : pullScroller.rollback(); break;

@@ -16,7 +16,7 @@
 
 package me.xiaopan.pullview;
 
-import me.xiaopan.pullview.CompositeGestureDetector.OnTouchListener;
+import me.xiaopan.pullview.PullGestureDetector.OnTouchListener;
 import me.xiaopan.pullview.PullViewBase.PullStatus;
 import android.view.MotionEvent;
 
@@ -24,10 +24,10 @@ import android.view.MotionEvent;
  * 触摸事件处理监听器
  */
 @SuppressWarnings("rawtypes")
-public class TouchEventHandleListener implements OnTouchListener {
+public class PullTouchEventListener implements OnTouchListener {
 	private PullViewBase pullViewBase;
     
-    public TouchEventHandleListener(PullViewBase pullViewBase) {
+    public PullTouchEventListener(PullViewBase pullViewBase) {
 		super();
 		this.pullViewBase = pullViewBase;
 	}
