@@ -87,6 +87,31 @@ public class MainActivity extends ListActivity{
         });
         pullListView.setPullHeaderView(pullToRefreshHeader);
         pullListView.triggerHeader();
+        
+        final PullToRefreshHeader pullToRefreshFooter = new PullToRefreshHeader(getBaseContext());
+        pullToRefreshFooter.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onNormal() {
+                ToastUtils.toastS(getBaseContext(), "恢复");
+            }
+
+            @Override
+            public void onReady() {
+                ToastUtils.toastS(getBaseContext(), "准备");
+            }
+
+            @Override
+            public void onRefresh() {
+                ToastUtils.toastS(getBaseContext(), "刷新");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullToRefreshFooter.complete();
+                    }
+                }, 5000);
+            }
+        });
+        pullListView.setPullFooterView(pullToRefreshFooter);
     }
 
     @Override

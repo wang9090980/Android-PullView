@@ -2,6 +2,7 @@ package me.xiaopan.pullview;
 
 import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
+import me.xiaopan.pullview.PullHeaderView.ControllCallback;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -60,6 +61,35 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         }else{
         	super.addView(child, index, params);
         }
+	}
+	
+	@Override
+	protected final void onSizeChanged(int w, int h, int oldw, int oldh) {
+		super.onSizeChanged(w, h, oldw, oldh);
+		/* 动态设置PullView的高度或宽度，这么做是为了让Footer显示出来 */
+		LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) pullView.getLayoutParams();
+		if(isVerticalPull()){
+			if (lp.height != h) {
+				lp.height = h;
+				pullView.requestLayout();
+			}
+		}else{
+			if (lp.width != w) {
+				lp.width = w;
+				pullView.requestLayout();
+			}
+		}
+
+		/**
+		 * As we're currently in a Layout Pass, we need to schedule another one
+		 * to layout any changes we've made here
+		 */
+		post(new Runnable() {
+			@Override
+			public void run() {
+				requestLayout();
+			}
+		});
 	}
 	
 	@Override
@@ -156,7 +186,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      */
     public void setPullHeaderView(PullHeaderView pullHeaderView) {
         this.pullHeaderView = pullHeaderView;
-        pullHeaderView.setControllCallback(new PullHeaderViewControllCallback(this));
+        pullHeaderView.setControllCallback(new ControllCallback() {
+			@Override
+			public void onRollback() {
+				getPullScroller().rollbackHeader();
+			}
+		});
         addViewToSelf = true;
         addView(pullHeaderView, 0, new LayoutParams(isVerticalPull()?ViewGroup.LayoutParams.MATCH_PARENT:ViewGroup.LayoutParams.WRAP_CONTENT, isVerticalPull()?ViewGroup.LayoutParams.WRAP_CONTENT:ViewGroup.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
@@ -174,6 +209,18 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
      */
     public void setPullFooterView(PullHeaderView pullFooterView) {
 		this.pullFooterView = pullFooterView;
+		pullFooterView.setControllCallback(new ControllCallback() {
+			@Override
+			public void onRollback() {
+				getPullScroller().rollbackFooter();
+			}
+		});
+        addViewToSelf = true;
+        addView(pullFooterView, new LayoutParams(isVerticalPull()?ViewGroup.LayoutParams.MATCH_PARENT:ViewGroup.LayoutParams.WRAP_CONTENT, isVerticalPull()?ViewGroup.LayoutParams.WRAP_CONTENT:ViewGroup.LayoutParams.MATCH_PARENT));
+        addViewToSelf = false;
+        ViewUtils.measure(pullFooterView);
+        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), -pullFooterView.getMeasuredHeight());
+        requestLayout();
 	}
 
 	/**
