@@ -120,6 +120,9 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     	        }
     			break;
     		case PULL_FOOTER : 
+    			if(pullFooterView != null){
+    				pullFooterView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
+    	        }
     			break;
     		case NORMAL : 
     			break;

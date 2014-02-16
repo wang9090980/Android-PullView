@@ -7,6 +7,7 @@ import me.xiaopan.easy.android.util.ToastUtils;
 import me.xiaopan.pullview.R;
 import me.xiaopan.pullview.sample.adapter.TextAdapter;
 import me.xiaopan.pullview.sample.domain.ActivityEntry;
+import me.xiaopan.pullview.sample.widget.PullToRefreshFooter;
 import me.xiaopan.pullview.sample.widget.PullToRefreshHeader;
 import me.xiaopan.pullview.sample.widget.PullToRefreshHeader.OnRefreshListener;
 import me.xiaopan.pullview.widget.PullListView;
@@ -88,21 +89,10 @@ public class MainActivity extends ListActivity{
         pullListView.setPullHeaderView(pullToRefreshHeader);
         pullListView.triggerHeader();
         
-        final PullToRefreshHeader pullToRefreshFooter = new PullToRefreshHeader(getBaseContext());
-        pullToRefreshFooter.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onNormal() {
-                ToastUtils.toastS(getBaseContext(), "恢复");
-            }
-
-            @Override
-            public void onReady() {
-                ToastUtils.toastS(getBaseContext(), "准备");
-            }
-
+        final PullToRefreshFooter pullToRefreshFooter = new PullToRefreshFooter(getBaseContext());
+        pullToRefreshFooter.setOnRefreshListener(new PullToRefreshFooter.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ToastUtils.toastS(getBaseContext(), "刷新");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {

@@ -18,7 +18,7 @@ import android.widget.TextView;
 /**
  * 下拉刷新头
  */
-public class PullToRefreshHeader extends PullHeaderView{
+public class PullToRefreshFooter extends PullHeaderView{
 	private int maxDegress = 180;
 	private float px, py;
 	private Matrix matrix;
@@ -27,12 +27,12 @@ public class PullToRefreshHeader extends PullHeaderView{
     private ProgressBar progressBar;
     private OnRefreshListener onRefreshListener;
 
-    public PullToRefreshHeader(Context context) {
+    public PullToRefreshFooter(Context context) {
         super(context);
         init();
     }
 
-    public PullToRefreshHeader(Context context, AttributeSet attrs) {
+    public PullToRefreshFooter(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -50,9 +50,8 @@ public class PullToRefreshHeader extends PullHeaderView{
     @Override
     public void onScroll(int distance) {
     	super.onScroll(distance);
-    	//旋转箭头
         int height = getHeight();
-    	matrix.setRotate(distance < height?((float) distance/height) * maxDegress:maxDegress, px, py);
+    	matrix.setRotate((distance < height?((float) distance/height) * maxDegress:maxDegress) + 180, px, py);
     	arrowImageView.setImageMatrix(matrix);
     }
     
@@ -117,18 +116,12 @@ public class PullToRefreshHeader extends PullHeaderView{
 		super.onStatusChange(newStatus);
 		switch(newStatus){
 			case NORMAL:
-				hintTextView.setText("继续下拉刷新");
+				hintTextView.setText("继续上拉刷新");
 				arrowImageView.setVisibility(View.VISIBLE);
 				progressBar.setVisibility(View.INVISIBLE);
-				if(onRefreshListener != null){
-					onRefreshListener.onNormal();
-				}
 				break;
 			case READY :
 				hintTextView.setText("现在松开即可刷新");
-				if(onRefreshListener != null){
-					onRefreshListener.onReady();
-				}
 				break;
 			case TRIGGERING :
 				hintTextView.setText("正在刷新…");
@@ -144,8 +137,6 @@ public class PullToRefreshHeader extends PullHeaderView{
 	}
 	
 	public interface OnRefreshListener{
-		public void onNormal();
-		public void onReady();
 		public void onRefresh();
 	}
 
