@@ -1,6 +1,5 @@
 package me.xiaopan.pullview;
 
-import me.xiaopan.easy.android.util.AndroidLogger;
 import me.xiaopan.easy.android.util.ViewUtils;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -42,7 +41,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	 * 初始化
 	 */
 	private void init(){
-        setOrientation(LinearLayout.VERTICAL);
+		setOrientation(isVerticalPull()?LinearLayout.VERTICAL:LinearLayout.HORIZONTAL);
         setGravity(Gravity.CENTER);
         pullScroller = new PullScroller(this, new PullScrollListener(this));
         pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchListener(this));
@@ -198,7 +197,12 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         addView(pullHeaderView, 0, new LayoutParams(isVerticalPull()?ViewGroup.LayoutParams.MATCH_PARENT:ViewGroup.LayoutParams.WRAP_CONTENT, isVerticalPull()?ViewGroup.LayoutParams.WRAP_CONTENT:ViewGroup.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
         ViewUtils.measure(pullHeaderView);
-        setPadding(getPaddingLeft(), -pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
+        if(isVerticalPull()){
+        	setPadding(getPaddingLeft(), getPaddingTop()-pullHeaderView.getMeasuredHeight(), getPaddingRight(), getPaddingBottom());
+        }else{
+        	setPadding(getPaddingLeft()-pullHeaderView.getMeasuredWidth(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+        }
+        requestLayout();
     }
     
     PullFooterView getPullFooterView() {
@@ -221,7 +225,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         addView(pullFooterView, new LayoutParams(isVerticalPull()?ViewGroup.LayoutParams.MATCH_PARENT:ViewGroup.LayoutParams.WRAP_CONTENT, isVerticalPull()?ViewGroup.LayoutParams.WRAP_CONTENT:ViewGroup.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
         ViewUtils.measure(pullFooterView);
-        setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), -pullFooterView.getMeasuredHeight());
+        if(isVerticalPull()){
+        	setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom()-pullFooterView.getMeasuredHeight());
+        }else{
+        	setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight()-pullFooterView.getMeasuredWidth(), getPaddingBottom());
+        }
         requestLayout();
 	}
 
@@ -235,15 +243,37 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     			getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
     				@Override
     				public void onGlobalLayout() {
-    					AndroidLogger.e("onGlobalLayout");
     					triggerHeader();
     					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
     				}
     			});
     		}else{
-    			AndroidLogger.e("triggerHeader");
     			pullHeaderView.setStatus(PullHeaderView.Status.READY);
-    			pullScroller.scroll(true, pullHeaderView.getMeasuredHeight());
+    			pullScroller.scroll(true, isVerticalPull()?pullHeaderView.getHeight():pullHeaderView.getWidth());
+    		}
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    
+	/**
+     * 触发Footer
+     * @return true：启动成功；false：启动失败，原因是没有Footer或Footer正在触发中
+     */
+    public boolean triggerFooter(){
+    	if(pullFooterView != null && !pullFooterView.isTriggering()){
+    		if(getHeight() == 0){
+    			getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+    				@Override
+    				public void onGlobalLayout() {
+    					triggerFooter();
+    					ViewUtils.removeOnGlobalLayoutListener(getViewTreeObserver(), this);
+    				}
+    			});
+    		}else{
+    			pullFooterView.setStatus(PullFooterView.Status.READY);
+    			pullScroller.scroll(false, -(isVerticalPull()?pullFooterView.getHeight():pullFooterView.getWidth()));
     		}
     		return true;
     	}else{

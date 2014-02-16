@@ -13,46 +13,50 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
- * 下拉刷新头
+ * 下拉刷新头 - 横向的
  */
-public class PullToRefreshHorHeader extends PullHeaderView{
+public class PulldownToRefreshHorizontalHeader extends PullHeaderView{
 	private int maxDegress = 180;
 	private float px, py;
 	private Matrix matrix;
-    private TextView hintTextView;
     private ImageView arrowImageView;
     private ProgressBar progressBar;
     private OnRefreshListener onRefreshListener;
+    
+    public PulldownToRefreshHorizontalHeader(Context context, OnRefreshListener onRefreshListener) {
+    	super(context);
+    	this.onRefreshListener = onRefreshListener;
+    	init();
+    }
 
-    public PullToRefreshHorHeader(Context context) {
+    public PulldownToRefreshHorizontalHeader(Context context) {
         super(context);
         init();
     }
 
-    public PullToRefreshHorHeader(Context context, AttributeSet attrs) {
+    public PulldownToRefreshHorizontalHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init(){
-        LayoutInflater.from(getContext()).inflate(R.layout.header_pull, this);
-        hintTextView = (TextView) findViewById(R.id.text_headerPull_hint);
-        arrowImageView = (ImageView) findViewById(R.id.image_headerPull_arrow);
+        LayoutInflater.from(getContext()).inflate(R.layout.pull_header_horizontal, this);
+        arrowImageView = (ImageView) findViewById(R.id.image_pullHeaderHorizontal_arrow);
         arrowImageView.setScaleType(ScaleType.MATRIX);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar_headerPull);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar_pullHeaderHorizontal);
         resetPxPy();
         matrix = new Matrix();
+        setStatus(Status.NORMAL);
     }
 
     @Override
     public void onScroll(int distance) {
     	super.onScroll(distance);
-    	//旋转箭头
-        int height = getHeight();
-    	matrix.setRotate(distance < height?((float) distance/height) * maxDegress:maxDegress, px, py);
+    	//当滚动的时候旋转箭头
+        int width = getWidth();
+    	matrix.setRotate(distance < width?((float) distance/width) * maxDegress:maxDegress, px, py);
     	arrowImageView.setImageMatrix(matrix);
     }
     
@@ -117,25 +121,16 @@ public class PullToRefreshHorHeader extends PullHeaderView{
 		super.onStatusChange(newStatus);
 		switch(newStatus){
 			case NORMAL:
-				hintTextView.setText("下拉刷新");
 				arrowImageView.setVisibility(View.VISIBLE);
 				progressBar.setVisibility(View.INVISIBLE);
-				if(onRefreshListener != null){
-					onRefreshListener.onNormal();
-				}
 				break;
 			case READY :
-				hintTextView.setText("松开刷新");
-				if(onRefreshListener != null){
-					onRefreshListener.onReady();
-				}
 				break;
 			case TRIGGERING :
-				hintTextView.setText("正在刷新…");
 				arrowImageView.setVisibility(View.INVISIBLE);
 				progressBar.setVisibility(View.VISIBLE);
 				if(onRefreshListener != null){
-					onRefreshListener.onRefresh();
+					onRefreshListener.onRefresh(this);
 				}
 				break;
 			case TRIGGER_TO_NORMAL : 
@@ -144,9 +139,7 @@ public class PullToRefreshHorHeader extends PullHeaderView{
 	}
 	
 	public interface OnRefreshListener{
-		public void onNormal();
-		public void onReady();
-		public void onRefresh();
+		public void onRefresh(PulldownToRefreshHorizontalHeader pulldownToRefreshHorizontalHeader);
 	}
 
 	public void setOnRefreshListener(OnRefreshListener onRefreshListener) {

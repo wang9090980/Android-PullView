@@ -23,12 +23,12 @@ public abstract class PullFooterView extends LinearLayout{
     protected void onScroll(int distance){
     	switch(status){
     		case NORMAL:
-    			if(distance >= getHeight()){
+    			if(distance >= getWidth()){
     				setStatus(Status.READY);
     			}
     			break;
     		case READY :
-    			if(distance < getHeight()){
+    			if(distance < getWidth()){
     				setStatus(Status.NORMAL);
     			}
     			break;
@@ -103,7 +103,7 @@ public abstract class PullFooterView extends LinearLayout{
 				minScrollValue = 0;
 				break;
 			case READY :
-				minScrollValue = getHeight();
+				minScrollValue = getWidth();
 				break;
 			case TRIGGERING :
 				break;

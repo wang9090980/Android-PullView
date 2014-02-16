@@ -5,23 +5,26 @@ import java.util.List;
 
 import me.xiaopan.pullview.R;
 import me.xiaopan.pullview.sample.adapter.ViewPagerAdapter;
-import me.xiaopan.pullview.sample.widget.PullToRefreshHeader;
-import me.xiaopan.pullview.sample.widget.PullToRefreshHeader.OnRefreshListener;
+import me.xiaopan.pullview.sample.widget.PulldownToRefreshHorizontalHeader;
+import me.xiaopan.pullview.sample.widget.PullupToRefreshHorizontalFooter;
 import me.xiaopan.pullview.widget.PullViewPager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class PullViewPagerActivity extends Activity {
-
+	private PullViewPager pullViewPager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_view_pager);
-		
-		PullViewPager pullViewPager = (PullViewPager) findViewById(R.id.pullViewPager_viewPager);
+		pullViewPager = (PullViewPager) findViewById(R.id.pullViewPager_viewPager);
 		
 		List<View> viewList = new ArrayList<View>();
 		viewList.add(create(R.drawable.image_1));
@@ -32,27 +35,30 @@ public class PullViewPagerActivity extends Activity {
 		viewList.add(create(R.drawable.image_6));
 		pullViewPager.getPullView().setAdapter(new ViewPagerAdapter(viewList));
 		
-		final PullToRefreshHeader pullToRefreshHeader = new PullToRefreshHeader(getBaseContext());
-        pullToRefreshHeader.setOnRefreshListener(new OnRefreshListener() {
+        pullViewPager.setPullHeaderView(new PulldownToRefreshHorizontalHeader(getBaseContext(), new PulldownToRefreshHorizontalHeader.OnRefreshListener() {
             @Override
-            public void onNormal() {
-            }
-
-            @Override
-            public void onReady() {
-            }
-
-            @Override
-            public void onRefresh() {
+            public void onRefresh(final PulldownToRefreshHorizontalHeader pulldownToRefreshHorizontalHeader) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        pullToRefreshHeader.complete();
+                        pulldownToRefreshHorizontalHeader.complete();
                     }
                 }, 5000);
             }
-        });
-        pullViewPager.setPullHeaderView(pullToRefreshHeader);
+        }));
+        
+        pullViewPager.setPullFooterView(new PullupToRefreshHorizontalFooter(getBaseContext(), new PullupToRefreshHorizontalFooter.OnRefreshListener() {
+            @Override
+            public void onRefresh(final PullupToRefreshHorizontalFooter pullupToRefreshHorizontalFooter) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullupToRefreshHorizontalFooter.complete();
+                    }
+                }, 5000);
+            }
+        }));
+
         pullViewPager.triggerHeader();
 	}
 	
@@ -61,4 +67,27 @@ public class PullViewPagerActivity extends Activity {
 		imageView.setImageResource(resId);
 		return imageView;
 	}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_refersh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_refresh_pulldown :
+                if(!pullViewPager.triggerHeader()){
+                	Toast.makeText(getBaseContext(), "对不起，当前正忙", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.menu_refresh_pullup :
+            	 if(!pullViewPager.triggerFooter()){
+            		 Toast.makeText(getBaseContext(), "对不起，当前正忙", Toast.LENGTH_SHORT).show();
+            	 }
+            	break;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
 }

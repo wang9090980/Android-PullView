@@ -3,13 +3,11 @@ package me.xiaopan.pullview.sample.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.xiaopan.easy.android.util.ToastUtils;
 import me.xiaopan.pullview.R;
 import me.xiaopan.pullview.sample.adapter.TextAdapter;
 import me.xiaopan.pullview.sample.domain.ActivityEntry;
-import me.xiaopan.pullview.sample.widget.PullToRefreshFooter;
-import me.xiaopan.pullview.sample.widget.PullToRefreshHeader;
-import me.xiaopan.pullview.sample.widget.PullToRefreshHeader.OnRefreshListener;
+import me.xiaopan.pullview.sample.widget.PulldownToRefreshHeader;
+import me.xiaopan.pullview.sample.widget.PullupToRefreshFooter;
 import me.xiaopan.pullview.widget.PullListView;
 import android.app.ListActivity;
 import android.os.Bundle;
@@ -18,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 public class MainActivity extends ListActivity{
     private TextAdapter textAdapter;
@@ -30,7 +29,6 @@ public class MainActivity extends ListActivity{
         pullListView = (PullListView) findViewById(R.id.pullList_list);
 
         List<TextAdapter.Text> entrys = new ArrayList<TextAdapter.Text>();
-
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullList), PullListActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullGrid), PullGridActivity.class).create());
         entrys.add(new ActivityEntry.Build(getString(R.string.activty_pullExpandableList), PullExpandableListActivity.class).create());
@@ -54,7 +52,6 @@ public class MainActivity extends ListActivity{
         entrys.add(new ActivityEntry.Build("TextView", null).create());
         entrys.add(new ActivityEntry.Build("TimePicker", null).create());
         entrys.add(new ActivityEntry.Build("ToggleButton", null).create());
-
         getListView().setAdapter(textAdapter = new TextAdapter(getBaseContext(), entrys));
 
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -63,60 +60,53 @@ public class MainActivity extends ListActivity{
                 ((ActivityEntry) textAdapter.getTexts().get(position - getListView().getHeaderViewsCount())).clickHandle(MainActivity.this);
             }
         });
-        final PullToRefreshHeader pullToRefreshHeader = new PullToRefreshHeader(getBaseContext());
-        pullToRefreshHeader.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onNormal() {
-                ToastUtils.toastS(getBaseContext(), "恢复");
-            }
-
-            @Override
-            public void onReady() {
-                ToastUtils.toastS(getBaseContext(), "准备");
-            }
-
-            @Override
-            public void onRefresh() {
-                ToastUtils.toastS(getBaseContext(), "刷新");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        pullToRefreshHeader.complete();
-                    }
-                }, 5000);
-            }
-        });
-        pullListView.setPullHeaderView(pullToRefreshHeader);
-        pullListView.triggerHeader();
         
-        final PullToRefreshFooter pullToRefreshFooter = new PullToRefreshFooter(getBaseContext());
-        pullToRefreshFooter.setOnRefreshListener(new PullToRefreshFooter.OnRefreshListener() {
+        pullListView.setPullHeaderView(new PulldownToRefreshHeader(getBaseContext(), new PulldownToRefreshHeader.OnRefreshListener() {
             @Override
-            public void onRefresh() {
-            	ToastUtils.toastS(getBaseContext(), "刷新");
+            public void onRefresh(final PulldownToRefreshHeader pulldownToRefreshHeader) {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        pullToRefreshFooter.complete();
+                    	pulldownToRefreshHeader.complete();
                     }
                 }, 5000);
             }
-        });
-        pullListView.setPullFooterView(pullToRefreshFooter);
+        }));
+        
+        pullListView.setPullFooterView(new PullupToRefreshFooter(getBaseContext(), new PullupToRefreshFooter.OnRefreshListener() {
+            @Override
+            public void onRefresh(final PullupToRefreshFooter pullupToRefreshFooter) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullupToRefreshFooter.complete();
+                    }
+                }, 5000);
+            }
+        }));
+        
+        pullListView.triggerHeader();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_refersh, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menu_main_refresh :
-                pullListView.triggerHeader();
+            case R.id.menu_refresh_pulldown :
+                if(!pullListView.triggerHeader()){
+                	Toast.makeText(getBaseContext(), "对不起，当前正忙", Toast.LENGTH_SHORT).show();
+                }
                 break;
+            case R.id.menu_refresh_pullup :
+            	 if(!pullListView.triggerFooter()){
+            		 Toast.makeText(getBaseContext(), "对不起，当前正忙", Toast.LENGTH_SHORT).show();
+            	 }
+            	break;
         }
         return super.onMenuItemSelected(featureId, item);
     }

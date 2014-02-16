@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:icon="@drawable/ic_refresh"
+        android:id="@+id/menu_refresh_pulldown"
+        android:title="下拉刷新"
+        android:showAsAction="always"
+        />
+    <item
+        android:icon="@drawable/tab_refresh"
+        android:id="@+id/menu_refresh_pullup"
+        android:title="上拉刷新"
+        android:showAsAction="always"
+        />
+</menu>

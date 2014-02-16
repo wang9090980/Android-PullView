@@ -16,9 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
- * 下拉刷新头
+ * 上拉刷新尾
  */
-public class PullToRefreshFooter extends PullFooterView{
+public class PullupToRefreshFooter extends PullFooterView{
 	private int maxDegress = 180;
 	private float px, py;
 	private Matrix matrix;
@@ -26,31 +26,38 @@ public class PullToRefreshFooter extends PullFooterView{
     private ImageView arrowImageView;
     private ProgressBar progressBar;
     private OnRefreshListener onRefreshListener;
+    
+    public PullupToRefreshFooter(Context context, OnRefreshListener onRefreshListener) {
+    	super(context);
+    	this.onRefreshListener = onRefreshListener;
+    	init();
+    }
 
-    public PullToRefreshFooter(Context context) {
+    public PullupToRefreshFooter(Context context) {
         super(context);
         init();
     }
 
-    public PullToRefreshFooter(Context context, AttributeSet attrs) {
+    public PullupToRefreshFooter(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init(){
-        LayoutInflater.from(getContext()).inflate(R.layout.header_pull, this);
-        hintTextView = (TextView) findViewById(R.id.text_headerPull_hint);
-        hintTextView.setText("继续上拉刷新");
-        arrowImageView = (ImageView) findViewById(R.id.image_headerPull_arrow);
+        LayoutInflater.from(getContext()).inflate(R.layout.pull_header, this);
+        hintTextView = (TextView) findViewById(R.id.text_pullHeader_hint);
+        arrowImageView = (ImageView) findViewById(R.id.image_pullHeader_arrow);
         arrowImageView.setScaleType(ScaleType.MATRIX);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar_headerPull);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar_pullHeader_progress);
         resetPxPy();
         matrix = new Matrix();
+        setStatus(Status.NORMAL);
     }
 
     @Override
     public void onScroll(int distance) {
     	super.onScroll(distance);
+    	//当滚动的时候旋转箭头
         int height = getHeight();
     	matrix.setRotate((distance < height?((float) distance/height) * maxDegress:maxDegress) + 180, px, py);
     	arrowImageView.setImageMatrix(matrix);
@@ -129,7 +136,7 @@ public class PullToRefreshFooter extends PullFooterView{
 				arrowImageView.setVisibility(View.INVISIBLE);
 				progressBar.setVisibility(View.VISIBLE);
 				if(onRefreshListener != null){
-					onRefreshListener.onRefresh();
+					onRefreshListener.onRefresh(this);
 				}
 				break;
 			case TRIGGER_TO_NORMAL : 
@@ -138,7 +145,7 @@ public class PullToRefreshFooter extends PullFooterView{
 	}
 	
 	public interface OnRefreshListener{
-		public void onRefresh();
+		public void onRefresh(PullupToRefreshFooter pullupToRefreshFooter);
 	}
 
 	public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
