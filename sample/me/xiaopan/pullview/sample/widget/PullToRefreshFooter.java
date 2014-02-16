@@ -40,6 +40,7 @@ public class PullToRefreshFooter extends PullFooterView{
     private void init(){
         LayoutInflater.from(getContext()).inflate(R.layout.header_pull, this);
         hintTextView = (TextView) findViewById(R.id.text_headerPull_hint);
+        hintTextView.setText("继续上拉刷新");
         arrowImageView = (ImageView) findViewById(R.id.image_headerPull_arrow);
         arrowImageView.setScaleType(ScaleType.MATRIX);
         progressBar = (ProgressBar) findViewById(R.id.progressBar_headerPull);

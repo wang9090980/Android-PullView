@@ -78,19 +78,11 @@ public class PullTouchListener implements OnTouchListener {
     		default : 
     			if(pullViewBase.isVerticalPull()){
     				if(distanceY < 0){	//如果向下拉
-//	        			if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-//	        				if(pullViewBase.getScrollY() <= (pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0)){
-//	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollY=" + pullViewBase.getScrollY());
-//	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
-//	        				}else{
-//	        					pullViewBase.logD("滚动：垂直-正在回滚头部，ScrollY=" + pullViewBase.getScrollY());
-//	        					pullViewBase.scrollBy(0, (int) distanceY);
-//	        					pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-//	        				}
-//	        			}
 	        			if(pullViewBase.getScrollY() > 0){
 	        				//如果Footer正在显示就先通过滚动隐藏Footer
-	        				
+	        				pullViewBase.logD("滚动：手动回滚Footer，ScrollY=" + pullViewBase.getScrollY());
+    						pullViewBase.scrollBy(0, (int) (distanceY));
+    						pullViewBase.scrollPullViewToFooter(pullViewBase.getPullView());
 	        			}else{
 	        				//如果可以拉伸Header并且
 	        				if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
@@ -115,22 +107,34 @@ public class PullTouchListener implements OnTouchListener {
     					}
 	        		}
     			}else{
-    				if(distanceX< 0){	//如果向右拉
-    					if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
-	        				if(pullViewBase.getScrollX() <= (pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0)){
-	        					pullViewBase.logD("滚动：开始拉伸头部，ScrollX=" + pullViewBase.getScrollX());
-	        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
-	        				}else{
-	        					pullViewBase.logD("滚动：正在回滚头部，ScrollY=" + pullViewBase.getScrollX());
-	        					pullViewBase.scrollBy((int) distanceX, 0);
-	        					pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
-	        				}
+    				if(distanceX < 0){	//如果向右拉
+	        			if(pullViewBase.getScrollX() > 0){
+	        				//如果Footer正在显示就先通过滚动隐藏Footer
+	        				pullViewBase.logD("滚动：手动回滚Footer，ScrollX=" + pullViewBase.getScrollX());
+    						pullViewBase.scrollBy((int) (distanceX), 0);
+    						pullViewBase.scrollPullViewToFooter(pullViewBase.getPullView());
+	        			}else{
+	        				//如果可以拉伸Header并且
+	        				if(pullViewBase.isCanPullHeader(pullViewBase.getPullView())){
+		        				if(pullViewBase.getScrollX() <= (pullViewBase.getPullHeaderView() != null?pullViewBase.getPullHeaderView().getMinScrollValue():0)){
+		        					pullViewBase.logD("滚动：开始拉伸头部，ScrollX=" + pullViewBase.getScrollX());
+		        					pullViewBase.setPullStatus(PullStatus.PULL_HEADER);
+		        				}
+		        			}
 	        			}
-	        		}else if(distanceX > 0){	//如果向上拉
-	        			if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
-	        				pullViewBase.logD("滚动：开始拉伸尾部，ScrollY=" + pullViewBase.getScrollX());
-	        				pullViewBase.setPullStatus(PullStatus.PULL_FOOTER);
-	        			}
+	        		}else if(distanceX > 0){	//如果向左拉
+    					if(pullViewBase.getScrollX() < 0){
+    						//如果Header正在显示就先通过滚动隐藏Header
+    						pullViewBase.logD("滚动：手动回滚Header，ScrollX=" + pullViewBase.getScrollX());
+    						pullViewBase.scrollBy((int) (distanceX), 0);
+    						pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
+    					}else{
+    						//如果可以拉伸Footer
+    						if(pullViewBase.isCanPullFooter(pullViewBase.getPullView())){
+    							pullViewBase.logD("滚动：开始拉伸尾部，ScrollX=" + pullViewBase.getScrollX());
+    							pullViewBase.setPullStatus(PullStatus.PULL_FOOTER);
+    						}
+    					}
 	        		}
     			}
     			break;
