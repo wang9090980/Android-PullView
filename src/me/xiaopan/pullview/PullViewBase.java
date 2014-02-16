@@ -45,7 +45,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         setOrientation(LinearLayout.VERTICAL);
         setGravity(Gravity.CENTER);
         pullScroller = new PullScroller(this, new PullScrollListener(this));
-        pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchEventListener(this));
+        pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchListener(this));
         addViewToSelf = true;
         addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;

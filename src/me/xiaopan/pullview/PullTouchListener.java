@@ -24,10 +24,10 @@ import android.view.MotionEvent;
  * 触摸事件处理监听器
  */
 @SuppressWarnings("rawtypes")
-public class PullTouchEventListener implements OnTouchListener {
+public class PullTouchListener implements OnTouchListener {
 	private PullViewBase pullViewBase;
     
-    public PullTouchEventListener(PullViewBase pullViewBase) {
+    public PullTouchListener(PullViewBase pullViewBase) {
 		super();
 		this.pullViewBase = pullViewBase;
 	}
