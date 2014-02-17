@@ -89,6 +89,10 @@ public abstract class PullFooterView extends LinearLayout{
 		this.controllCallback = controllCallback;
 	}
     
+    public int getTriggerValue(){
+    	return pullViewBase.isVerticalPull()?getHeight():getWidth();
+    }
+    
     /**
      *   获取最小滚动值
      * @return

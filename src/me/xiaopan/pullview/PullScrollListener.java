@@ -31,21 +31,36 @@ public class PullScrollListener implements OnScrollListener {
 		this.pullViewBase = pullViewBase;
 	}
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void onScroll(boolean isScrollHeader) {
+    public void onScroll(boolean isHeader, boolean isScrollToFirstOrEnd) {
     	pullViewBase.setForbidTouchEvent(true);
-    	pullViewBase.handleScrollCallback();
+    	if(isHeader){
+    		if(pullViewBase.getPullHeaderView() != null){
+				pullViewBase.getPullHeaderView().onScroll(Math.abs(pullViewBase.isVerticalPull()?pullViewBase.getScrollY():pullViewBase.getScrollX()));
+	        }
+    		if(isScrollToFirstOrEnd){
+    			pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
+    		}
+    	}else{
+    		if(pullViewBase.getPullFooterView() != null){
+				pullViewBase.getPullFooterView().onScroll(Math.abs(pullViewBase.isVerticalPull()?pullViewBase.getScrollY():pullViewBase.getScrollX()));
+	        }
+    		if(isScrollToFirstOrEnd){
+    			pullViewBase.scrollPullViewToFooter(pullViewBase.getPullView());
+    		}
+    	}
     }
 
     @Override
-    public void onComplete(boolean isScrollHeader, boolean isForceAbort) {
+    public void onComplete(boolean isHeader, boolean isForceAbort) {
     	pullViewBase.setForbidTouchEvent(false);
         if(isForceAbort){
         	pullViewBase.logD("回滚：中断");
         }else{
         	pullViewBase.logD("回滚：已完成");
             pullViewBase.setPullStatus(PullStatus.NORMAL);
-            if(isScrollHeader){
+            if(isHeader){
             	if(pullViewBase.getPullHeaderView() != null){
                 	if(pullViewBase.getPullHeaderView().getStatus() == PullHeaderView.Status.READY){
                 		pullViewBase.getPullHeaderView().onTrigger();

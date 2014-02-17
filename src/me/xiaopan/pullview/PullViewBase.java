@@ -107,25 +107,25 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 		}
 	}
 
-	/**
-     * 处理滚动回调
-     */
-    void handleScrollCallback(){
-    	switch(pullStatus){
-    		case PULL_HEADER :
-    			if(pullHeaderView != null){
-    	        	pullHeaderView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
-    	        }
-    			break;
-    		case PULL_FOOTER : 
-    			if(pullFooterView != null){
-    				pullFooterView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
-    	        }
-    			break;
-    		case NORMAL : 
-    			break;
-    	}
-    }
+//	/**
+//     * 处理滚动回调
+//     */
+//    void handleScrollCallback(){
+//    	switch(pullStatus){
+//    		case PULL_HEADER :
+//    			if(pullHeaderView != null){
+//    	        	pullHeaderView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
+//    	        }
+//    			break;
+//    		case PULL_FOOTER : 
+//    			if(pullFooterView != null){
+//    				pullFooterView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
+//    	        }
+//    			break;
+//    		case NORMAL : 
+//    			break;
+//    	}
+//    }
 
 	/**
 	 * 创建内容视图
@@ -250,8 +250,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     				}
     			});
     		}else{
-    			pullHeaderView.setStatus(PullHeaderView.Status.READY);
-    			pullScroller.scroll(true, isVerticalPull()?pullHeaderView.getHeight():pullHeaderView.getWidth());
+    			pullScroller.showHeader();
     		}
     		return true;
     	}else{
@@ -274,8 +273,7 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     				}
     			});
     		}else{
-    			pullFooterView.setStatus(PullFooterView.Status.READY);
-    			pullScroller.scroll(false, -(isVerticalPull()?pullFooterView.getHeight():pullFooterView.getWidth()));
+    			pullScroller.showFooter();
     		}
     		return true;
     	}else{

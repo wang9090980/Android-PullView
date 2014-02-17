@@ -57,7 +57,9 @@ public class PullTouchListener implements OnTouchListener {
     					pullViewBase.setPullStatus(PullStatus.NORMAL);
     				}
     			}
-    			pullViewBase.handleScrollCallback();
+    			if(pullViewBase.getPullHeaderView() != null){
+    				pullViewBase.getPullHeaderView().onScroll(Math.abs(pullViewBase.isVerticalPull()?pullViewBase.getScrollY():pullViewBase.getScrollX()));
+    	        }
     			pullViewBase.scrollPullViewToHeader(pullViewBase.getPullView());
     			break;
     		case PULL_FOOTER : 
@@ -72,7 +74,9 @@ public class PullTouchListener implements OnTouchListener {
     					pullViewBase.setPullStatus(PullStatus.NORMAL);
     				}
     			}
-    			pullViewBase.handleScrollCallback();
+    			if(pullViewBase.getPullFooterView() != null){
+    				pullViewBase.getPullFooterView().onScroll(Math.abs(pullViewBase.isVerticalPull()?pullViewBase.getScrollY():pullViewBase.getScrollX()));
+    	        }
     			pullViewBase.scrollPullViewToFooter(pullViewBase.getPullView());
     			break;
     		default : 
