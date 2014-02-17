@@ -34,7 +34,7 @@ public class PullScrollListener implements OnScrollListener {
     @SuppressWarnings("unchecked")
     @Override
     public void onScroll(boolean isHeader, boolean isScrollToFirstOrEnd) {
-    	pullViewBase.setForbidTouchEvent(true);
+//    	pullViewBase.setForbidTouchEvent(true);
     	if(isHeader){
     		if(pullViewBase.getPullHeaderView() != null){
 				pullViewBase.getPullHeaderView().onScroll(Math.abs(pullViewBase.isVerticalPull()?pullViewBase.getScrollY():pullViewBase.getScrollX()));
@@ -54,7 +54,7 @@ public class PullScrollListener implements OnScrollListener {
 
     @Override
     public void onComplete(boolean isHeader, boolean isForceAbort) {
-    	pullViewBase.setForbidTouchEvent(false);
+//    	pullViewBase.setForbidTouchEvent(false);
         if(isForceAbort){
         	pullViewBase.logD("回滚：中断");
         }else{
