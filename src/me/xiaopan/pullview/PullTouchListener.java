@@ -32,12 +32,12 @@ public class PullTouchListener implements OnTouchListener {
 		this.pullViewBase = pullViewBase;
 	}
 
-	@Override
+    @Override
     public boolean onTouchDown(MotionEvent e) {
         if(pullViewBase.getPullScroller().isScrolling()){
         	pullViewBase.getPullScroller().abortScroll();
         }
-        pullViewBase.setIntercept(false);
+        pullViewBase.setInterceptTouchEvent(false);
         return true;
     }
 
@@ -79,7 +79,7 @@ public class PullTouchListener implements OnTouchListener {
     	        }
     			pullViewBase.scrollPullViewToFooter(pullViewBase.getPullView());
     			break;
-    		default : 
+    		default :
     			if(pullViewBase.isVerticalPull()){
     				if(distanceY < 0){	//如果向下拉
 	        			if(pullViewBase.getScrollY() > 0){
@@ -148,7 +148,12 @@ public class PullTouchListener implements OnTouchListener {
     
     @Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-    	pullViewBase.setIntercept(pullViewBase.getPullStatus() != PullStatus.NORMAL);
+    	pullViewBase.setInterceptTouchEvent(pullViewBase.getPullStatus() != PullStatus.NORMAL);
 		return true;
 	}
+
+    @Override
+    public void onTouchUpOrCancel() {
+        pullViewBase.getPullScroller().rollback();
+    }
 }

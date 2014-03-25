@@ -33,9 +33,8 @@ import android.widget.LinearLayout;
  */
 public abstract class PullViewBase<T extends View> extends LinearLayout{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
-	private boolean intercept;	//是否拦截事件
+	private boolean interceptTouchEvent;	//是否拦截触摸事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
-    private boolean forbidTouchEvent;	//禁止触摸事件
     private T pullView; //被拉的视图
 	private PullStatus pullStatus = PullStatus.NORMAL;    //状态标识
 	private PullScroller pullScroller;  //滚动器，用来回滚
@@ -44,83 +43,77 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
     private PullGestureDetector pullGestureDetector;  //综合的手势识别器
 
 	public PullViewBase(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		init();
-	}
+        super(context, attrs);
+        init();
+    }
 
-	public PullViewBase(Context context) {
-		super(context);
-		init();
-	}
-	
-	/**
-	 * 初始化
-	 */
-	private void init(){
-		setOrientation(isVerticalPull()?LinearLayout.VERTICAL:LinearLayout.HORIZONTAL);
+    public PullViewBase(Context context) {
+        super(context);
+        init();
+    }
+
+    /**
+     * 初始化
+     */
+    private void init(){
+        setOrientation(isVerticalPull()?LinearLayout.VERTICAL:LinearLayout.HORIZONTAL);
         setGravity(Gravity.CENTER);
         pullScroller = new PullScroller(this, new PullScrollListener(this));
         pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchListener(this));
         addViewToSelf = true;
         addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
-	}
+    }
 
-	@Override
-	public void addView(View child, int index, ViewGroup.LayoutParams params) {
+    @Override
+    public void addView(View child, int index, ViewGroup.LayoutParams params) {
         if(addViewToSelf){
             super.addView(child, index, params);
         }else if(pullView instanceof ViewGroup){
             ((ViewGroup) pullView).addView(child, index, params);
         }else{
-        	super.addView(child, index, params);
+            super.addView(child, index, params);
         }
-	}
-	
-	@Override
-	protected final void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		/* 动态设置PullView的高度或宽度，这么做是为了让Footer显示出来 */
-		LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) pullView.getLayoutParams();
-		if(isVerticalPull()){
-			if (lp.height != h) {
-				lp.height = h;
-				pullView.requestLayout();
-			}
-		}else{
-			if (lp.width != w) {
-				lp.width = w;
-				pullView.requestLayout();
-			}
-		}
+    }
 
-		/**
-		 * As we're currently in a Layout Pass, we need to schedule another one
-		 * to layout any changes we've made here
-		 */
-		post(new Runnable() {
-			@Override
-			public void run() {
-				requestLayout();
-			}
-		});
-	}
-	
-	@Override
+    @Override
+    protected final void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+		/* 动态设置PullView的高度或宽度，这么做是为了让Footer显示出来 */
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) pullView.getLayoutParams();
+        if(isVerticalPull()){
+            if (lp.height != h) {
+                lp.height = h;
+                pullView.requestLayout();
+            }
+        }else{
+            if (lp.width != w) {
+                lp.width = w;
+                pullView.requestLayout();
+            }
+        }
+
+        /**
+         * As we're currently in a Layout Pass, we need to schedule another one
+         * to layout any changes we've made here
+         */
+        post(new Runnable() {
+            @Override
+            public void run() {
+                requestLayout();
+            }
+        });
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return interceptTouchEvent;
+    }
+
+    @Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		if(!forbidTouchEvent){
-			pullGestureDetector.onTouchEvent(ev);
-			switch(ev.getAction()){
-				case MotionEvent.ACTION_UP : pullScroller.rollback(); break;
-				case MotionEvent.ACTION_CANCEL : pullScroller.rollback(); break;
-			}
-			if(!intercept){
-				super.dispatchTouchEvent(ev);
-			}
-			return true;
-		}else{
-			return false;
-		}
+        pullGestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
 	}
 
 //	/**
@@ -322,19 +315,11 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	}
 
 	/**
-	 * 是否需要中断事件传递
-	 * @return
-	 */
-	boolean isIntercept() {
-		return intercept;
-	}
-
-	/**
 	 * 设置是否中断事件传递
-	 * @param intercept
+	 * @param interceptTouchEvent
 	 */
-	void setIntercept(boolean intercept) {
-		this.intercept = intercept;
+	void setInterceptTouchEvent(boolean interceptTouchEvent) {
+		this.interceptTouchEvent = interceptTouchEvent;
 	}
 
 	/**
@@ -353,22 +338,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 		this.pullStatus = pullStatus;
 	}
 	
-	/**
-	 * 是否禁止触摸事件
-	 * @return
-	 */
-	boolean isForbidTouchEvent() {
-		return forbidTouchEvent;
-	}
-
-	/**
-	 * 设置是否禁止触摸事件
-	 * @param forbidTouchEvent
-	 */
-	void setForbidTouchEvent(boolean forbidTouchEvent) {
-		this.forbidTouchEvent = forbidTouchEvent;
-	}
-
 	void logI(String msg){
 		Log.i(PullViewBase.class.getSimpleName(), msg);
 	}

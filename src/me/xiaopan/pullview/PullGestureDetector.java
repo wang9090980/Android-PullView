@@ -28,12 +28,22 @@ public class PullGestureDetector implements GestureDetector.OnGestureListener{
     private OnTouchListener onTouchListener;
 
     public PullGestureDetector(Context context, OnTouchListener onTouchListener) {
+        this.gestureDetector = new GestureDetector(context, this);
         this.onTouchListener = onTouchListener;
-        gestureDetector = new GestureDetector(context, this);
     }
 
     public void onTouchEvent(MotionEvent ev){
-        gestureDetector.onTouchEvent(ev);
+        switch(ev.getAction()){
+            case MotionEvent.ACTION_UP :
+                onTouchListener.onTouchUpOrCancel();
+                break;
+            case MotionEvent.ACTION_CANCEL :
+                onTouchListener.onTouchUpOrCancel();
+                break;
+            default:
+                gestureDetector.onTouchEvent(ev);
+                break;
+        }
     }
 
     @Override
@@ -71,14 +81,14 @@ public class PullGestureDetector implements GestureDetector.OnGestureListener{
      */
     public interface OnTouchListener{
         /**
-         * 当触摸屏幕并按下
+         * 当按下
          * @param e
          * @return
          */
         public boolean onTouchDown(MotionEvent e);
         
         /**
-         * 当触摸屏幕并滚动
+         * 当滚动
          * @param e1
          * @param e2
          * @param distanceX
@@ -86,7 +96,20 @@ public class PullGestureDetector implements GestureDetector.OnGestureListener{
          * @return
          */
         public boolean onTouchScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY);
-        
+
+        /**
+         * 当飞速滚动
+         * @param e1
+         * @param e2
+         * @param velocityX
+         * @param velocityY
+         * @return
+         */
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY);
+
+        /**
+         * 当弹起或取消
+         */
+        public void onTouchUpOrCancel();
     }
 }
