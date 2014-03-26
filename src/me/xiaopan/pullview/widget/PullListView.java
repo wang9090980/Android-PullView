@@ -35,7 +35,7 @@ public class PullListView extends PullAdapterViewBase<ListView> {
     }
 
     @Override
-    protected ListView createPullView() {
+    public ListView createPullView() {
         ListView listView = new ListView(getContext());
         listView.setId(android.R.id.list);
         listView.setCacheColorHint(Color.TRANSPARENT);

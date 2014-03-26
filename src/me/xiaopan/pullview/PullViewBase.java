@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
  * 拉伸视图基类
  * @param <T>
  */
-public abstract class PullViewBase<T extends View> extends LinearLayout{
+public abstract class PullViewBase<T extends View> extends LinearLayout implements PullViewInterface<T>{
 	private float elasticForce = 0.4f;  //弹力强度，用来实现拉橡皮筋效果
 	private boolean interceptTouchEvent;	//是否拦截触摸事件
     private boolean addViewToSelf;  //给自己添加视图，当为true的时候新视图将添加到自己的ViewGroup里，否则将添加到pullView（只有pullView是ViewGroup的时候才会添加成功）里
@@ -61,18 +61,20 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         pullScroller = new PullScroller(this, new PullScrollListener(this));
         pullGestureDetector = new PullGestureDetector(getContext(), new PullTouchListener(this));
         addViewToSelf = true;
-        addView(pullView = createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        addView(pullView = (T) createPullView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         addViewToSelf = false;
     }
 
     @Override
     public void addView(View child, int index, ViewGroup.LayoutParams params) {
-        if(addViewToSelf){
-            super.addView(child, index, params);
-        }else if(pullView instanceof ViewGroup){
-            ((ViewGroup) pullView).addView(child, index, params);
-        }else{
-            super.addView(child, index, params);
+        if(child != null){
+            if(addViewToSelf){
+                super.addView(child, index, params);
+            }else if(pullView instanceof ViewGroup){
+                ((ViewGroup) pullView).addView(child, index, params);
+            }else{
+                super.addView(child, index, params);
+            }
         }
     }
 
@@ -81,15 +83,17 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         super.onSizeChanged(w, h, oldw, oldh);
 		/* 动态设置PullView的高度或宽度，这么做是为了让Footer显示出来 */
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) pullView.getLayoutParams();
-        if(isVerticalPull()){
-            if (lp.height != h) {
-                lp.height = h;
-                pullView.requestLayout();
-            }
-        }else{
-            if (lp.width != w) {
-                lp.width = w;
-                pullView.requestLayout();
+        if(lp != null){
+            if(isVerticalPull()){
+                if (lp.height != h) {
+                    lp.height = h;
+                    pullView.requestLayout();
+                }
+            }else{
+                if (lp.width != w) {
+                    lp.width = w;
+                    pullView.requestLayout();
+                }
             }
         }
 
@@ -115,64 +119,6 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
         pullGestureDetector.onTouchEvent(ev);
         return super.dispatchTouchEvent(ev);
 	}
-
-//	/**
-//     * 处理滚动回调
-//     */
-//    void handleScrollCallback(){
-//    	switch(pullStatus){
-//    		case PULL_HEADER :
-//    			if(pullHeaderView != null){
-//    	        	pullHeaderView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
-//    	        }
-//    			break;
-//    		case PULL_FOOTER : 
-//    			if(pullFooterView != null){
-//    				pullFooterView.onScroll(Math.abs(isVerticalPull()?getScrollY():getScrollX()));
-//    	        }
-//    			break;
-//    		case NORMAL : 
-//    			break;
-//    	}
-//    }
-
-	/**
-	 * 创建内容视图
-	 * @return 内容视图
-	 */
-    protected abstract T createPullView();
-
-    /**
-     * 是否是垂直拉伸
-     * @return true：垂直拉伸；false：横向拉伸
-     */
-    protected abstract boolean isVerticalPull();
-
-	/**
-	 * 是否可以拉头部
-     * @param pullView 拉伸视图
-	 * @return 是否可以拉头部
-	 */
-    protected abstract boolean isCanPullHeader(T pullView);
-	
-	/**
-	 * 是否可以拉尾部
-     * @param pullView 拉伸视图
-	 * @return 是否可以拉尾部
-	 */
-    protected abstract boolean isCanPullFooter(T pullView);
-	
-	/**
-	 * 滚动拉伸视图到头部
-     * @param pullView 拉伸视图
-	 */
-	protected abstract void scrollPullViewToHeader(T pullView);
-
-	/**
-	 * 滚动拉伸视图到尾部
-     * @param pullView 拉伸视图
-	 */
-	protected abstract void scrollPullViewToFooter(T pullView);
 
 	/**
 	 * 获取拉伸视图
@@ -337,16 +283,16 @@ public abstract class PullViewBase<T extends View> extends LinearLayout{
 	void setPullStatus(PullStatus pullStatus) {
 		this.pullStatus = pullStatus;
 	}
-	
-	void logI(String msg){
+
+    public static final void logI(String msg){
 		Log.i(PullViewBase.class.getSimpleName(), msg);
 	}
-	
-	void logD(String msg){
+
+    public static final void logD(String msg){
 		Log.d(PullViewBase.class.getSimpleName(), msg);
 	}
-	
-	void logE(String msg){
+
+    public static final void logE(String msg){
 		Log.e(PullViewBase.class.getSimpleName(), msg);
 	}
 	

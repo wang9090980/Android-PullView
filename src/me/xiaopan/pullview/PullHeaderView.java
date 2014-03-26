@@ -50,7 +50,7 @@ public abstract class PullHeaderView extends LinearLayout{
     			break;
     		case TRIGGERING :
     			break;
-    		case TRIGGER_TO_NORMAL : 
+    		case TRIGGER_TO_NORMAL :
     			break;
     	}
     }

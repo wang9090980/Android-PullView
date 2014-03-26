@@ -35,12 +35,12 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    protected boolean isVerticalPull() {
+    public boolean isVerticalPull() {
         return true;
     }
 
     @Override
-    protected boolean isCanPullHeader(AbsListView pullView) {
+    public boolean isCanPullHeader(AbsListView pullView) {
         boolean result = false;
         final Adapter adapter = pullView.getAdapter();
         if (null != adapter && !adapter.isEmpty() && pullView.getFirstVisiblePosition() <= 1) {
@@ -53,7 +53,7 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    protected boolean isCanPullFooter(AbsListView pullView) {
+    public boolean isCanPullFooter(AbsListView pullView) {
         boolean result = false;
         final Adapter adapter = pullView.getAdapter();
         if (null != adapter && !adapter.isEmpty()) {
@@ -74,12 +74,12 @@ public abstract class PullAdapterViewBase<T extends AbsListView> extends PullVie
     }
 
     @Override
-    protected void scrollPullViewToHeader(AbsListView pullView) {
+    public void scrollPullViewToHeader(AbsListView pullView) {
         pullView.setSelection(0);
     }
 
     @Override
-    protected void scrollPullViewToFooter(AbsListView pullView) {
+    public void scrollPullViewToFooter(AbsListView pullView) {
         if(!pullView.getAdapter().isEmpty()){
             pullView.setSelection(pullView.getCount() - 1);
         }

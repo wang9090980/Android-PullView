@@ -35,7 +35,7 @@ public class PullExpandableListView extends PullAdapterViewBase<ExpandableListVi
     }
 
     @Override
-    protected ExpandableListView createPullView() {
+    public ExpandableListView createPullView() {
         ExpandableListView listView = new ExpandableListView(getContext());
         listView.setId(android.R.id.list);
         listView.setCacheColorHint(Color.TRANSPARENT);

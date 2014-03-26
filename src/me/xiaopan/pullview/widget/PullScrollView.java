@@ -37,21 +37,11 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	protected ScrollView createPullView() {
+    public ScrollView createPullView() {
 		ScrollView scrollView = new ScrollView(getContext());
 		scrollView.setBackgroundColor(Color.WHITE);
 		return scrollView;
 	}
-
-//	@Override
-//	public View createHeaderView() {
-//		return null;
-//	}
-//
-//	@Override
-//	public View createFooterView() {
-//		return null;
-//	}
 
 	@Override
 	public boolean isCanPullHeader(ScrollView pullView) {
@@ -78,17 +68,17 @@ public class PullScrollView extends PullViewBase<ScrollView> {
 	}
 
 	@Override
-	protected boolean isVerticalPull() {
+    public boolean isVerticalPull() {
 		return true;
 	}
 
     @Override
-    protected void scrollPullViewToHeader(ScrollView pullView) {
+    public void scrollPullViewToHeader(ScrollView pullView) {
         pullView.scrollTo(pullView.getScrollX(), 0);
     }
 
     @Override
-    protected void scrollPullViewToFooter(ScrollView pullView) {
+    public void scrollPullViewToFooter(ScrollView pullView) {
         View scrollViewChild = pullView.getChildAt(0);
         int contentHeight = null != scrollViewChild?scrollViewChild.getHeight():0;  //内容高度
         int viewHeight = getHeight();   //视图高度

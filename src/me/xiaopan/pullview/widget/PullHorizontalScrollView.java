@@ -37,21 +37,11 @@ public class PullHorizontalScrollView extends PullViewBase<HorizontalScrollView>
 	}
 
 	@Override
-	protected HorizontalScrollView createPullView() {
+    public HorizontalScrollView createPullView() {
 		HorizontalScrollView horizontalScrollView = new HorizontalScrollView(getContext());
 		horizontalScrollView.setBackgroundColor(Color.WHITE);
 		return horizontalScrollView;
 	}
-
-//	@Override
-//	public View createHeaderView() {
-//		return null;
-//	}
-//
-//	@Override
-//	public View createFooterView() {
-//		return null;
-//	}
 
 	@Override
 	public boolean isCanPullHeader(HorizontalScrollView pullView) {
@@ -78,17 +68,17 @@ public class PullHorizontalScrollView extends PullViewBase<HorizontalScrollView>
 	}
 
 	@Override
-	protected boolean isVerticalPull() {
+    public boolean isVerticalPull() {
 		return false;
 	}
 
     @Override
-    protected void scrollPullViewToHeader(HorizontalScrollView pullView) {
+    public void scrollPullViewToHeader(HorizontalScrollView pullView) {
         pullView.scrollTo(0, pullView.getScrollY());
     }
 
     @Override
-    protected void scrollPullViewToFooter(HorizontalScrollView pullView) {
+    public void scrollPullViewToFooter(HorizontalScrollView pullView) {
         View scrollViewChild = pullView.getChildAt(0);
         int contentWidth = null != scrollViewChild?scrollViewChild.getWidth():0;  //内容宽度
         int viewWidth = getWidth();   //视图宽度
